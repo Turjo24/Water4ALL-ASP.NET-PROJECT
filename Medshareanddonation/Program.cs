@@ -56,15 +56,15 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-   //app.UseExceptionHandler("/Home/Error");
-   //app.UseHsts();
-   // app.MapOpenApi();
+    //app.UseExceptionHandler("/Home/Error");
+    //app.UseHsts();
+    // app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/openApi/v1.json", "Medshareanddonation");
     }
-    );   
+    );
 
 
 
