@@ -1,0 +1,16 @@
+﻿@inherits LayoutComponentBase
+
+<div class="flex h-screen flex-col overflow-hidden">
+    <!-- Navigation Menu -->
+    <NavMenu />
+
+    <!-- Main content area that takes remaining height -->
+    <main class="flex flex-1 overflow-hidden">
+        @Body
+    </main>
+
+    <!-- Footer -->
+    <footer class="flex-shrink-0 bg-gray-200 p-4 text-center">
+        © 2025 My App
+    </footer>
+</div>
