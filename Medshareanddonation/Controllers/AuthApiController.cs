@@ -32,7 +32,7 @@ namespace Medshareanddonation.Controllers
             _jwtExpiry = int.TryParse(configuration["Jwt:ExpiryInMinutes"], out var expiry) ? expiry : 60;
         }
 
-        [HttpPost("Register{id}")]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] Registermodel registermodel)
         {
             if (registermodel == null ||
@@ -66,7 +66,7 @@ namespace Medshareanddonation.Controllers
         }
 
 
-        [HttpPost("Login{id}")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             if (loginModel == null || string.IsNullOrEmpty(loginModel.Email) || string.IsNullOrEmpty(loginModel.Password))
@@ -90,7 +90,7 @@ namespace Medshareanddonation.Controllers
             return Ok(new { Token = token });
         }
 
-        [HttpPost("Logout{id}")]
+        [HttpPost("Logout")]
 
         public async Task<IActionResult> Logout()
         {
