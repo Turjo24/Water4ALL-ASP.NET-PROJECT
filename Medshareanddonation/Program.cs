@@ -58,7 +58,7 @@ if (app.Environment.IsDevelopment())
 {
     //app.UseExceptionHandler("/Home/Error");
     //app.UseHsts();
-    // app.MapOpenApi();
+    app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
