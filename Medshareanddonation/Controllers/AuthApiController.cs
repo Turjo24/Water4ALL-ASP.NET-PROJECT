@@ -12,6 +12,7 @@ namespace Medshareanddonation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [IgnoreAntiforgeryToken]
     public class AuthApiController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
