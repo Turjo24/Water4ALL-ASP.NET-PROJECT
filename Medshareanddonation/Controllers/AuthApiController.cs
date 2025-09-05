@@ -179,16 +179,24 @@ namespace Medshareanddonation.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat,
+                    new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(),
+                    ClaimValueTypes.Integer64),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim("Role", user.Role)
+                new Claim(ClaimTypes.Name, user.name), // Fixed: use user.name (lowercase) as per ApplicationUser definition
+                new Claim(ClaimTypes.Email, user.Email)
             };
 
-            // Add role claims
+            // Add role claims (remove duplicate role claim)
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            // Ensure key is at least 256 bits (32 bytes) for HS256
+            if (Encoding.UTF8.GetBytes(_jwtKey).Length < 32)
+            {
+                throw new InvalidOperationException("JWT key must be at least 256 bits (32 characters) for HS256");
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
@@ -198,8 +206,10 @@ namespace Medshareanddonation.Controllers
                 issuer: _jwtIssuer,
                 audience: _jwtAudience,
                 claims: claims,
+                notBefore: DateTime.UtcNow, // Add this for security
                 expires: DateTime.UtcNow.AddMinutes(_jwtExpiry),
-                signingCredentials: creds);
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
