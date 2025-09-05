@@ -1,0 +1,36 @@
+﻿<nav class="flex-shrink-0 bg-gray-100 text-black shadow-md">
+    <div class="px-4 sm:px-2 lg:px-5">
+        <div class="flex h-16 items-center justify-between">
+            <div class="flex items-center">
+                <NavLink class="text-xl font-semibold transition-colors hover:text-gray-600"
+                         href="/"
+                         Match="NavLinkMatch.All">
+                    MyApp
+                </NavLink>
+            </div>
+            <div class="flex space-x-4">
+                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
+                         href="/"
+                         Match="NavLinkMatch.All">
+                    Home
+                </NavLink>
+                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
+                         href="/about">
+                    About
+                </NavLink>
+                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
+                         href="/contact">
+                    Contact
+                </NavLink>
+                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
+                         href="/auth/signin">
+                    Sign In
+                </NavLink>
+            </div>
+            <NavLink class="cursor-pointer rounded border border-gray-500 px-4 py-1 transition-colors hover:bg-gray-300"
+                     href="/auth/signup">
+                Sign Up
+            </NavLink>
+        </div>
+    </div>
+</nav>
