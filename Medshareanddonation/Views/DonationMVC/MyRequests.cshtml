@@ -1,0 +1,62 @@
+﻿\<h2>My Donation Requests</h2>
+
+<table id="myRequestsTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Location</th>
+            <th>Liters</th>
+            <th>Reason</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Rows added dynamically -->
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        async function loadMyRequests() {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    alert("Please login to view your requests.");
+                    return;
+                }
+
+                const response = await fetch("https://localhost:7217/api/donation/MyRequests", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error("Failed to fetch your requests");
+
+                const requests = await response.json();
+                const tbody = document.querySelector("#myRequestsTable tbody");
+                tbody.innerHTML = "";
+
+                requests.forEach(req => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${req.name}</td>
+                        <td>${req.phoneNumber}</td>
+                        <td>${req.locationAddress}</td>
+                        <td>${req.waterLiters}</td>
+                        <td>${req.reason}</td>
+                        <td>${req.status}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                alert("Error loading your donation requests");
+            }
+        }
+
+        // load my requests on page load
+        loadMyRequests();
+    </script>
+}

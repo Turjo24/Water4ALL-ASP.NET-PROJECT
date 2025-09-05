@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Donation Request";
+}
+
+<h2>Donation Request Form</h2>
+
+<form id="donationForm">
+
+    <div>
+        <label>Name</label>
+        <input id="Name" name="Name" required />
+    </div>
+    <div>
+        <label>Phone Number</label>
+        <input id="PhoneNumber" name="PhoneNumber" required />
+    </div>
+    <div>
+        <label>Location Address</label>
+        <input id="LocationAddress" name="LocationAddress" required />
+    </div>
+    <div>
+        <label>Water Liters Required</label>
+        <input id="WaterLiters" name="WaterLiters" type="number" min="1" required />
+    </div>
+    <div>
+        <label>Reason</label>
+        <textarea id="Reason" name="Reason" required></textarea>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById("donationForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            // Collect form data
+            const model = {
+                name: document.getElementById("Name").value.trim(),
+                phoneNumber: document.getElementById("PhoneNumber").value.trim(),
+                locationAddress: document.getElementById("LocationAddress").value.trim(),
+                waterLiters: parseInt(document.getElementById("WaterLiters").value),
+                reason: document.getElementById("Reason").value.trim()
+            };
+
+            try {
+                // Get JWT token from localStorage
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    alert("You are not logged in. Please login first.");
+                    return;
+                }
+
+                const response = await fetch("https://localhost:7217/api/donation/Create", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}` // JWT authorization
+                    },
+                    body: JSON.stringify(model)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert("Donation Request Created! ID: " + data.id);
+                    // Optionally reset the form
+                    document.getElementById("donationForm").reset();
+                } else if (response.status === 401) {
+                    alert("Unauthorized! Please login again.");
+                } else if (response.status === 400) {
+                    const errors = await response.json();
+                    console.error(errors);
+                    alert("Validation error: " + JSON.stringify(errors));
+                } else {
+                    const errorText = await response.text();
+                    alert("Error: " + errorText);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Something went wrong!");
+            }
+        });
+    </script>
+}
