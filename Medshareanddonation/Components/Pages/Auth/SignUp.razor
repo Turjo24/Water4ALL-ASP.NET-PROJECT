@@ -17,164 +17,170 @@
             }
         }
     </script>
+    <style>
+        /* Hide scrollbar but allow scrolling */
+        html, body {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 10+ */
+        }
+
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Opera */
+            }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-green-50 to-blue-50 min-h-screen">
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <!-- Header -->
-            <div class="text-center">
-                <div class="mx-auto h-12 w-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
-                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                    </svg>
+    <div class="flex min-h-screen">
+
+        <!-- LEFT SIDE -->
+        <div class="relative hidden w-1/2 items-center justify-center lg:flex">
+            <!-- Background image -->
+            <img src="/images/waterDrop.png" alt="background" class="absolute inset-0 h-full w-full object-contain p-10 opacity-30" />
+
+            <!-- Content -->
+            <div class="relative z-10 space-y-8 px-12 text-center">
+                <h1 class="text-4xl font-bold text-blue-700">Join Us. Make a Difference.</h1>
+                <div class="space-y-4 text-base">
+                    <div>
+                        <h2 class="font-semibold">Sign Up to Request Clean Water and Purification Kits</h2>
+                        <p>Your journey towards providing clean water and solutions starts with a simple sign-up.</p>
+                    </div>
+                    <div>
+                        <h2 class="font-semibold">Create Your Account and Get Started</h2>
+                        <p>Sign up to manage your requests and start making an impact in your community today.</p>
+                    </div>
+                    <div>
+                        <h2 class="font-semibold">Sign Up to Empower Your Community with Clean Water</h2>
+                        <p>Create an account and begin requesting water solutions for areas in need.</p>
+                    </div>
+                    <div>
+                        <h2 class="font-semibold">Start Making a Difference Today – Sign Up</h2>
+                        <p>Register to access your account, track water distribution, and contribute to a healthier future.</p>
+                    </div>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-900">Join MedShare</h2>
-                <p class="mt-2 text-sm text-gray-600">Create your account to get started</p>
             </div>
+        </div>
 
-            <!-- Register Form -->
-            <div class="bg-white p-8 rounded-xl shadow-lg">
-                <form id="registerForm" class="space-y-6">
-                    <!-- Name Field -->
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Full Name
-                        </label>
-                        <input 
-                            id="name" 
-                            name="name" 
-                            type="text" 
-                            required 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors"
-                            placeholder="Enter your full name"
-                        >
+        <!-- Right Section (Register Form) -->
+        <div class="flex w-full items-center justify-center px-4 py-12 sm:px-6 lg:w-1/2 lg:px-8">
+            <div class="w-full max-w-md space-y-2">
+                <!-- Logo and Header -->
+                <div class="text-center">
+                    <div class="mx-auto mb-1 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-green-500 to-blue-500">
+                        <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
                     </div>
+                    <h2 class="text-3xl font-bold text-gray-900">Water4All</h2>
+                    <p class="text-sm text-gray-600">Create your account to get started</p>
+                </div>
 
-                    <!-- Email Field -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Email Address
-                        </label>
-                        <input 
-                            id="email" 
-                            name="email" 
-                            type="email" 
-                            required 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors"
-                            placeholder="Enter your email"
-                        >
-                    </div>
-
-                    <!-- Role Selection -->
-                    <div>
-                        <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
-                            Role
-                        </label>
-                        <select 
-                            id="role" 
-                            name="role" 
-                            required 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors"
-                        >
-                            <option value="">Select your role</option>
-                            <option value="User">User (General Public)</option>
-                            <option value="Volunteer">Volunteer</option>
-                            <option value="Admin">Admin</option>
-                        </select>
-                    </div>
-
-                    <!-- Password Field -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                            Password
-                        </label>
-                        <div class="relative">
-                            <input 
-                                id="password" 
-                                name="password" 
-                                type="password" 
-                                required 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors pr-12"
-                                placeholder="Create a strong password"
-                                minlength="6"
-                            >
-                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
+                <!-- Form Card -->
+                <div class="rounded-xl bg-white p-8 shadow-lg">
+                    <form id="registerForm" class="space-y-2">
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="mb-2 block text-sm font-medium text-gray-700">Full Name</label>
+                            <input id="name" name="name" type="text" required placeholder="Enter your full name"
+                                   class="w-full border-0 border-b-2 border-gray-300 px-4 py-2 placeholder-gray-400 transition duration-300 focus:border-blue-500 focus:outline-none focus:ring-0" />
                         </div>
-                        <p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters long</p>
-                    </div>
 
-                    <!-- Confirm Password Field -->
-                    <div>
-                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
-                            Confirm Password
-                        </label>
-                        <div class="relative">
-                            <input 
-                                id="confirmPassword" 
-                                name="confirmPassword" 
-                                type="password" 
-                                required 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors pr-12"
-                                placeholder="Confirm your password"
-                            >
-                            <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="mb-2 block text-sm font-medium text-gray-700">Email Address</label>
+                            <input id="email" name="email" type="email" required placeholder="Enter your email"
+                                   class="w-full border-0 border-b-2 border-gray-300 px-4 py-2 placeholder-gray-400 transition duration-300 focus:border-blue-500 focus:outline-none focus:ring-0" />
                         </div>
+
+                        <!-- Role -->
+                        <div>
+                            <label for="role" class="mb-2 block text-sm font-medium text-gray-700">Role</label>
+                            <select id="role" name="role" required
+                                    class="w-full border-0 border-b-2 border-gray-300 px-4 py-2 placeholder-gray-400 transition duration-300 focus:border-blue-500 focus:outline-none focus:ring-0">
+                                <option value="">Select your role</option>
+                                <option value="User">User (General Public)</option>
+                                <option value="Volunteer">Volunteer</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="mb-2 block text-sm font-medium text-gray-700">Password</label>
+                            <div class="relative">
+                                <input id="password" name="password" type="password" required minlength="6"
+                                       placeholder="Create a strong password"
+                                       class="w-full border-0 border-b-2 border-gray-300 px-4 py-2 placeholder-gray-400 transition duration-300 focus:border-blue-500 focus:outline-none focus:ring-0" />
+                                <button type="button" id="togglePassword"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters long</p>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label for="confirmPassword" class="mb-2 block text-sm font-medium text-gray-700">Confirm Password</label>
+                            <div class="relative">
+                                <input id="confirmPassword" name="confirmPassword" type="password" required
+                                       placeholder="Confirm your password"
+                                       class="w-full border-0 border-b-2 border-gray-300 px-4 py-2 placeholder-gray-400 transition duration-300 focus:border-blue-500 focus:outline-none focus:ring-0" />
+                                <button type="button" id="toggleConfirmPassword"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="flex items-center">
+                            <input id="terms" name="terms" type="checkbox" required
+                                   class="text-secondary h-4 w-4 rounded border-gray-300 focus:ring-secondary" />
+                            <label for="terms" class="ml-2 block text-sm text-gray-700">
+                                I agree to the
+                                <a href="#" class="text-secondary underline hover:text-green-700">Terms and Conditions</a>
+                            </label>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" id="registerBtn"
+                                class="w-full rounded-lg bg-gradient-to-r from-green-500 to-blue-500 px-4 py-3 font-medium text-white transition-all duration-200 hover:from-green-600 hover:to-blue-600 focus:ring-secondary focus:outline-none focus:ring-2 focus:ring-offset-2">
+                            <span id="registerBtnText">Create Account</span>
+                            <div id="registerSpinner"
+                                 class="ml-2 inline-block hidden h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                        </button>
+                    </form>
+
+                    <!-- Messages -->
+                    <div id="errorMessage" class="mt-4 hidden rounded-lg border border-red-400 bg-red-100 p-3 text-red-700"></div>
+                    <div id="successMessage" class="mt-4 hidden rounded-lg border border-green-400 bg-green-100 p-3 text-green-700"></div>
+
+                    <!-- Link to Sign In -->
+                    <div class="mt-6 text-center">
+                        <p class="text-sm text-gray-600">
+                            Already have an account?
+                            <a href="SignIn" class="text-secondary font-medium transition-colors hover:text-green-700">Sign in here</a>
+                        </p>
                     </div>
-
-                    <!-- Terms Checkbox -->
-                    <div class="flex items-center">
-                        <input 
-                            id="terms" 
-                            name="terms" 
-                            type="checkbox" 
-                            required 
-                            class="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
-                        >
-                        <label for="terms" class="ml-2 block text-sm text-gray-700">
-                            I agree to the <a href="#" class="text-secondary hover:text-green-700 underline">Terms and Conditions</a>
-                        </label>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button 
-                        type="submit" 
-                        id="registerBtn"
-                        class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 px-4 rounded-lg hover:from-green-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-all duration-200 font-medium"
-                    >
-                        <span id="registerBtnText">Create Account</span>
-                        <div id="registerSpinner" class="hidden inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
-                    </button>
-                </form>
-
-                <!-- Error Message -->
-                <div id="errorMessage" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg"></div>
-
-                <!-- Success Message -->
-                <div id="successMessage" class="hidden mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg"></div>
-
-                <!-- Login Link -->
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600">
-                        Already have an account? 
-                        <a href="SignIn" class="text-secondary hover:text-green-700 font-medium transition-colors">
-                            Sign in here
-                        </a>
-                    </p>
                 </div>
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const registerForm = document.getElementById('registerForm');
@@ -262,7 +268,7 @@
 
                         // Redirect to login page
                         setTimeout(() => {
-                            window.location.href = 'Auth/SignIn';
+                            window.location.href = '/auth/signin';
                         }, 2000);
                     } else {
                         let errorText = 'Registration failed';
