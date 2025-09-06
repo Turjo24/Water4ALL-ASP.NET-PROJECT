@@ -1,36 +1,99 @@
-﻿<nav class="flex-shrink-0 bg-gray-100 text-black shadow-md">
-    <div class="px-4 sm:px-2 lg:px-5">
-        <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-                <NavLink class="text-xl font-semibold transition-colors hover:text-gray-600"
-                         href="/"
-                         Match="NavLinkMatch.All">
-                    MyApp
-                </NavLink>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navbar - MedShare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                primary: '#3B82F6',
+                secondary: '#10B981'
+              }
+            }
+          }
+        };
+    </script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- ✅ NAVBAR -->
+    <nav class="flex-shrink-0 bg-white text-black shadow-md">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6">
+            <div class="flex h-16 items-center justify-between">
+
+                <!-- Logo / Brand -->
+                <div class="flex items-center">
+                    <a href="/" class="text-xl font-semibold transition-colors hover:text-gray-600">
+                        MyApp
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex space-x-4">
+                    <a href="/" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Home</a>
+                    <a href="/about" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">About</a>
+                    <a href="/contact" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Contact</a>
+                </div>
+
+                <!-- Right Actions -->
+                <div id="navRightActions" class="flex items-center space-x-3 relative">
+                    <!-- Filled by JS -->
+                </div>
+
             </div>
-            <div class="flex space-x-4">
-                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
-                         href="/"
-                         Match="NavLinkMatch.All">
-                    Home
-                </NavLink>
-                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
-                         href="/about">
-                    About
-                </NavLink>
-                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
-                         href="/contact">
-                    Contact
-                </NavLink>
-                <NavLink class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500"
-                         href="/auth/signin">
-                    Sign In
-                </NavLink>
-            </div>
-            <NavLink class="cursor-pointer rounded border border-gray-500 px-4 py-1 transition-colors hover:bg-gray-300"
-                     href="/auth/signup">
-                Sign Up
-            </NavLink>
         </div>
-    </div>
-</nav>
+    </nav>
+
+    <!-- ✅ LOGOUT SCRIPT & RENDER LOGIC -->
+    <script>
+        const navRight = document.getElementById('navRightActions');
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          // Show Sign Up if no token
+          navRight.innerHTML = `
+            <a href="/auth/signup" class="cursor-pointer rounded border border-gray-500 px-4 py-1 text-sm transition-colors hover:bg-gray-300">
+              Sign Up
+            </a>
+          `;
+        } else {
+          // Show Profile Icon with Dropdown
+          navRight.innerHTML = `
+            <div class="relative group">
+              <button class="focus:outline-none">
+                <!-- Profile Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              
+              </button>
+
+              <!-- Dropdown -->
+              <div class="absolute right-0 z-50 mt-2 w-40 rounded-md border bg-white py-2 shadow-lg opacity-0 group-hover:opacity-100 group-hover:visible invisible transition-all duration-150">
+                <a href="/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Dashboard</a>
+                <button id="logoutBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Logout</button>
+              </div>
+            </div>
+          `;
+
+          // Attach logout event after rendering
+          setTimeout(() => {
+            const logoutBtn = document.getElementById('logoutBtn');
+            logoutBtn?.addEventListener('click', function () {
+              localStorage.removeItem('token');
+              localStorage.removeItem('userId');
+              localStorage.removeItem('userName');
+              localStorage.removeItem('userRole');
+              window.location.href = "/auth/signin";
+            });
+          }, 0);
+        }
+    </script>
+
+</body>
+</html>
