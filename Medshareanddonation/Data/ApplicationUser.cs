@@ -12,5 +12,8 @@ namespace Medshareanddonation.Data
 
         public ICollection<DonationRequest> DonationRequests { get; set; }
 
+        public ICollection<Order> Orders { get; set; }
+        public ICollection<OrderItem> OrderItems{ get; set; } 
+
     }
 }
