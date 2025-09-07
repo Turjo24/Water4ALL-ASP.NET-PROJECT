@@ -49,10 +49,11 @@
         </div>
     </nav>
 
-    <!-- ✅ LOGOUT SCRIPT & RENDER LOGIC -->
+    <!-- ✅ LOGOUT & DASHBOARD SCRIPT -->
     <script>
         const navRight = document.getElementById('navRightActions');
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem('userRole'); // Make sure role is stored after login
 
         if (!token) {
           // Show Sign Up if no token
@@ -71,19 +72,19 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-              
               </button>
 
               <!-- Dropdown -->
               <div class="absolute right-0 z-50 mt-2 w-40 rounded-md border bg-white py-2 shadow-lg opacity-0 group-hover:opacity-100 group-hover:visible invisible transition-all duration-150">
-                <a href="/Profile/Details" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Dashboard</a>
+                <button id="dashboardBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Dashboard</button>
                 <button id="logoutBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Logout</button>
               </div>
             </div>
           `;
 
-          // Attach logout event after rendering
+          // Attach events after rendering
           setTimeout(() => {
+            // Logout
             const logoutBtn = document.getElementById('logoutBtn');
             logoutBtn?.addEventListener('click', function () {
               localStorage.removeItem('token');
@@ -91,6 +92,17 @@
               localStorage.removeItem('userName');
               localStorage.removeItem('userRole');
               window.location.href = "/auth/signin";
+            });
+
+            // Dashboard redirect
+            const dashboardBtn = document.getElementById('dashboardBtn');
+            dashboardBtn?.addEventListener('click', function () {
+              const role = localStorage.getItem('userRole');
+              if (role === 'Admin') {
+                window.location.href = '/Profile/AdminProfile';
+              } else {
+                window.location.href = '/Profile/UserProfile';
+              }
             });
           }, 0);
         }

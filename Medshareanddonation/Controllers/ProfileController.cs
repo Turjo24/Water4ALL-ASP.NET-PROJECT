@@ -8,17 +8,40 @@ namespace Medshareanddonation.Controllers
     [Route("[controller]")]
     public class ProfileController : Controller
     {
-        // Full-page profile view (requires authorization for API)
-        [HttpGet("Details")]
-        public IActionResult Details()
+        // Direct profile views
+        [HttpGet("UserProfile")]
+        public IActionResult UserProfile()
         {
-            // Just render the Razor page
+            return View("UserProfile"); // Razor page for normal users
+        }
+
+        [HttpGet("AdminProfile")]
+        public IActionResult AdminProfile()
+        {
+            return View("AdminProfile"); // Razor page for admins
+        }
+
+        // Optional: Details route (can be used if needed)
+        [HttpGet("Details")]
+        [AllowAnonymous]
+        public IActionResult Details(string token = null)
+        {
+            if (!string.IsNullOrEmpty(token))
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(token);
+                var role = jwt.Claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value ?? "User";
+
+                if (role == "Admin")
+                    return View("AdminProfile");
+            }
+
             return View("UserProfile");
         }
 
-        // API endpoint to get user info via JWT
+        // API to fetch user info
         [HttpGet("GetData")]
-        [AllowAnonymous] // We'll manually validate the token from header
+        [AllowAnonymous]
         public IActionResult GetData()
         {
             var authHeader = Request.Headers["Authorization"].FirstOrDefault();
