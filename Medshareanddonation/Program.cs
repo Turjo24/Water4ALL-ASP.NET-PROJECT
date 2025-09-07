@@ -14,14 +14,17 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddServerSideBlazor();
+
 builder.Services.AddAntiforgery(options =>
 {
     options.SuppressXFrameOptionsHeader = true;
 });
 
+// ✅ Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// ✅ Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -30,10 +33,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 1;
     options.Password.RequiredUniqueChars = 0;
-}).AddEntityFrameworkStores<ApplicationDbContext>()
-  .AddDefaultTokenProviders();
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
-// ✅ JWT configuration (header-only, no query string)
+// ✅ JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,6 +57,8 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
@@ -76,20 +82,20 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication();
+app.UseAuthentication(); // ✅ must be before UseAuthorization
 app.UseAuthorization();
 
-app.UseAntiforgery(); // Add anti-forgery middleware
+app.UseAntiforgery();
 
-// Map Controllers for API (without anti-forgery)
+// ✅ Map Controllers (disable antiforgery for API)
 app.MapControllers()
-   .DisableAntiforgery(); // Disable anti-forgery for API endpoints
+   .DisableAntiforgery();
 
-// Map Razor Components for Blazor
+// ✅ Map Blazor components
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Fallback route for MVC
+// ✅ MVC fallback
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
