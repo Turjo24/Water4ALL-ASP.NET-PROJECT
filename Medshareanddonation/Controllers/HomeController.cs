@@ -23,6 +23,18 @@ namespace Medshareanddonation.Controllers
             return View();
         }
 
+        [Route("about")]
+        public IActionResult About()
+        {
+            return View();
+        }
+
+        [Route("contact")]
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
