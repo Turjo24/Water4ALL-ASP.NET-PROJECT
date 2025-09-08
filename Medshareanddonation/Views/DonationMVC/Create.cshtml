@@ -1,33 +1,96 @@
-﻿@{
-    ViewData["Title"] = "Donation Request";
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Be a Donor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Hide scrollbar but allow scrolling */
+        html, body {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 10+ */
+        }
 
-<h2>Donation Request Form</h2>
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Opera */
+            }
+    </style>
+    
+</head>
+<body class="bg-white text-gray-800 font-sans">
 
-<form id="donationForm">
 
-    <div>
-        <label>Name</label>
-        <input id="Name" name="Name" required />
+        <div class=" items-center max-w-7xl w-full  flex h-screen mx-auto justify-between ">
+
+            <!-- Left: Form -->
+            <div class=" w-1/2 ml-5">
+                <h2 class="text-4xl font-semibold mb-16 text-green-800 text-center">Be a Donor</h2>
+                <form id="donationForm" class="space-y-4 justify-between">
+                    <!-- Name -->
+                    <div class="flex w-full space-x-4">
+                        <div class="w-1/2">
+                            <label for="Name" class="block text-sm font-medium mb-2">Full Name<span class="text-red-500">*</span></label>
+                            <input type="text" id="Name" placeholder="Enter Your Full Name" class="w-full border border-gray-300 rounded px-4 py-2" required />
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="w-1/2">
+                            <label for="PhoneNumber" class="block text-sm font-medium mb-2">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" id="PhoneNumber" placeholder="+08801234567890" class="w-full border border-gray-300 rounded px-4 py-2 text-green-800 font-medium bg-neutral-200/50 focus:outline-none" required />
+                        </div>
+                    </div>
+
+                    <!-- Location Address -->
+                    <div>
+                        <label for="LocationAddress" class="block text-sm font-medium mb-2">Location Address <span class="text-red-500">*</span></label>
+                        <input type="text" id="LocationAddress" placeholder="Enter Your Location" class="w-full border border-gray-300 rounded px-4 py-2" required />
+                    </div>
+
+                    <!-- Water Liters -->
+                    <div>
+                        <label for="WaterLiters" class="block text-sm font-medium mb-2">Water Liters (to donate)<span class="text-red-500">*</span></label>
+                        <input type="number" id="WaterLiters" placeholder="50" class="w-full border border-gray-300 rounded px-4 py-2" required />
+                    </div>
+
+                    <!-- Reason -->
+                    <div>
+                        <label for="Reason" class="block text-sm font-medium mb-2">Reasons <span class="text-red-500">*</span></label>
+                        <textarea id="Reason" placeholder="Tell us why you're donating..." class="w-full border border-gray-300 rounded px-4 py-2" rows="4" required></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl">
+                        Donate
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right: Image -->
+            <div class="hidden md:flex items-center justify-center w-2/3">
+                <img src="~/Images/Donate.png" alt="Donation illustration" class="w-full h-auto" />
+            </div>
+
+       
     </div>
-    <div>
-        <label>Phone Number</label>
-        <input id="PhoneNumber" name="PhoneNumber" required />
-    </div>
-    <div>
-        <label>Location Address</label>
-        <input id="LocationAddress" name="LocationAddress" required />
-    </div>
-    <div>
-        <label>Water Liters Required</label>
-        <input id="WaterLiters" name="WaterLiters" type="number" min="1" required />
-    </div>
-    <div>
-        <label>Reason</label>
-        <textarea id="Reason" name="Reason" required></textarea>
-    </div>
-    <button type="submit">Submit</button>
-</form>
+
+</body>
+</html>
+
+
 
 @section Scripts {
     <script>

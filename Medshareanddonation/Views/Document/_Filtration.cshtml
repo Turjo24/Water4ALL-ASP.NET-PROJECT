@@ -1,0 +1,148 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediBridge - Water Purification</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- Hide Scrollbar -->
+    <style>
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none;
+            }
+    </style>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <main class="max-w-5xl mx-auto p-6 text-justify space-y-10">
+        <h2 class="text-3xl font-bold mb-4 text-center text-blue-500 tracking-tighter">Detailed Water Supply and Filtration Process</h2>
+
+        <!-- Step 1 -->
+        <div class="flex items-center  gap-5">
+            <div>
+                <h3 class="text-xl font-semibold mb-2">1. Water Source</h3>
+                <p class="mb-6">
+                    Water is initially collected from natural sources such as underground wells, lakes, rivers, or reservoirs. These sources contain various impurities including sediments, microorganisms, and chemical contaminants. The quality of the raw water varies depending on the source, so it needs to be treated before use.
+                </p>
+            </div>
+            <div>
+                <img src="~/Images/filterization/1-Photoroom.png" alt="Boiling Water picture" class=" w-full h-auto object-contain" />
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex items-center  gap-5">
+            <div>
+                <img src="~/Images/filterization/2-Photoroom.png" alt="Boiling Water picture" class=" w-full h-auto object-contain" />
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-2">2. Mechanical Filtration</h3>
+                <p class="mb-6">
+                    The first stage of purification involves mechanical filtration, where water passes through physical filters designed to remove larger suspended particles like sand, dirt, leaves, and other debris. This prevents clogging in subsequent treatment stages and improves overall water clarity.
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex items-center  gap-5">
+            <div>
+                <h3 class="text-xl font-semibold mb-2">3. Coal Filtration (Activated Carbon Filtration)</h3>
+                <p class="mb-6">
+                    After mechanical filtration, the water flows through activated carbon filters. These filters are highly effective at absorbing chlorine, volatile organic compounds (VOCs), and other chemicals that can affect taste and odor. The carbon media also traps some dissolved organic substances, making the water safer and more pleasant to drink.
+                </p>
+            </div>
+            <div>
+                <img src="~/Images/filterization/3-Photoroom.png" alt="Boiling Water picture" class=" w-full h-auto object-contain" />
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex items-center  gap-5">
+            <div>
+                <img src="~/Images/filterization/4-Photoroom.png" alt="Boiling Water picture" class=" w-full h-auto object-contain" />
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-2">4. Nano Filtration</h3>
+                <p class="mb-6">
+                    Nano filtration is an advanced filtration technology that uses membranes with very small pore sizes. This step targets and removes microscopic contaminants such as bacteria, viruses, pesticides, and heavy metals like lead and arsenic. Unlike traditional filters, nano filters can remove contaminants without removing essential minerals needed for health.
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="flex items-center  gap-5">
+            <div>
+                <h3 class="text-xl font-semibold mb-2">5. Chemical Analysis</h3>
+                <p class="mb-6">
+                    Throughout the treatment process, water is regularly tested in laboratories to check for chemical composition and ensure compliance with health and safety standards. This analysis detects harmful substances like nitrates, heavy metals, and pathogens. It also ensures that pH levels and mineral content are within acceptable ranges.
+                </p>
+            </div>
+            <div>
+                <img src="~/Images/filterization/5-Photoroom.png" alt="Boiling Water picture" class=" w-full h-auto object-contain " />
+            </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="flex items-center  gap-5">
+            <div>
+                <img src="~/Images/filterization/6-Photoroom.png" alt="Boiling Water picture" class=" w-full h-auto object-contain -translate-y-10" />
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-2">6. Water Pipes</h3>
+                <p class="mb-6">
+                    Once purified, the water is transported through a network of clean, sealed water pipes. These pipes are designed to prevent contamination during distribution, maintaining water quality until it reaches consumers. Regular maintenance and monitoring of the piping system are essential to avoid leaks or bacterial growth.
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="flex items-center  gap-5">
+            <div>
+                <h3 class="text-xl font-semibold mb-2">7. Domestic Filtration</h3>
+                <p class="mb-6">
+                    Many households and businesses install additional filtration units to further purify water. These systems, such as reverse osmosis units or multi-stage filters, remove any residual impurities and contaminants that might enter during distribution. This step helps ensure that the water is fresh and safe at the point of use.
+                </p>
+            </div>
+            <div>
+                <img src="~/Images/filterization/7-Photoroom.png" alt="Boiling Water picture" class=" w-full h-auto object-contain" />
+            </div>
+        </div>
+
+        <!-- Step 8 -->
+        <div class="flex flex-col items-center  gap-5">
+            <div>
+                <img src="~/Images/filterization/8-Photoroom.png" alt="Boiling Water picture" class=" w-full h-[25vh] object-contain" />
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-2">8. Drinking Water</h3>
+                <p class="mb-6">
+                    Finally, purified water is delivered to consumers for drinking and cooking. It can be accessed directly from taps or provided in bottled form. The water is safe, clean, and free from harmful contaminants, providing reliable hydration and health benefits.
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
