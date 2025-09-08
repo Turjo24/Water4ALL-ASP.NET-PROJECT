@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Contact";
+}
+
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Contact Us</h2>
+
+        <p class="text-gray-700 text-lg mb-4">
+            Have questions or need support? Reach out to us using the information below:
+        </p>
+
+        <div class="space-y-3 text-gray-700">
+            <p>📧 Email: <a href="mailto:support@medshare.com" class="text-blue-500 hover:underline">support@medshare.com</a></p>
+            <p>📞 Phone: +880 1234 567 890</p>
+            <p>🏢 Address: 123 MedShare Street, Dhaka, Bangladesh</p>
+        </div>
+
+        <form class="mt-6 space-y-4">
+            <input type="text" placeholder="Your Name" class="w-full border rounded px-3 py-2" />
+            <input type="email" placeholder="Your Email" class="w-full border rounded px-3 py-2" />
+            <textarea placeholder="Message" class="w-full border rounded px-3 py-2 h-32"></textarea>
+            <button type="submit" class="w-full bg-primary text-white py-2 rounded hover:bg-blue-600 transition">Send Message</button>
+        </form>
+    </div>
+</div>
