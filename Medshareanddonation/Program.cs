@@ -1,5 +1,6 @@
 ﻿using Medshareanddonation.Components;
 using Medshareanddonation.Data;
+using Medshareanddonation.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// ✅ JWT Authentication
+//  Register ProfileService
+builder.Services.AddScoped<IProfileService, ProfileService>();
+
+//  JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -82,20 +86,20 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication(); // ✅ must be before UseAuthorization
+app.UseAuthentication(); //  must be before UseAuthorization
 app.UseAuthorization();
 
 app.UseAntiforgery();
 
-// ✅ Map Controllers (disable antiforgery for API)
+//  Map Controllers (disable antiforgery for API)
 app.MapControllers()
    .DisableAntiforgery();
 
-// ✅ Map Blazor components
+//  Map Blazor components
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// ✅ MVC fallback
+//  MVC fallback
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
