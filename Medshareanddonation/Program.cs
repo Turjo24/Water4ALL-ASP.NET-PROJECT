@@ -14,14 +14,17 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddServerSideBlazor();
+
 builder.Services.AddAntiforgery(options =>
 {
     options.SuppressXFrameOptionsHeader = true;
 });
 
+// ✅ Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// ✅ Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -30,27 +33,32 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 1;
     options.Password.RequiredUniqueChars = 0;
-}).AddEntityFrameworkStores<ApplicationDbContext>()
-  .AddDefaultTokenProviders();
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
-// JWT configuration
+// ✅ JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
@@ -73,19 +81,21 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthentication();
+
+app.UseAuthentication(); // ✅ must be before UseAuthorization
 app.UseAuthorization();
-app.UseAntiforgery(); // Add anti-forgery middleware
 
-// Map Controllers for API (without anti-forgery)
+app.UseAntiforgery();
+
+// ✅ Map Controllers (disable antiforgery for API)
 app.MapControllers()
-   .DisableAntiforgery(); // Disable anti-forgery for API endpoints
+   .DisableAntiforgery();
 
-// Map Razor Components for Blazor
+// ✅ Map Blazor components
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Fallback route for MVC
+// ✅ MVC fallback
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

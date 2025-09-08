@@ -1,7 +1,102 @@
-﻿@page "/"
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediBridge - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                primary: '#3B82F6',
+                secondary: '#10B981',
+              },
+            },
+          },
+        };
+    </script>
+    <style>
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
 
-<PageTitle>Home</PageTitle>
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none;
+            }
+    </style>
+</head>
 
-<h1 class="">Hello, world!</h1>
+<body class="h-full bg-gradient-to-br from-blue-50 to-green-50 font-sans">
+    <div class="flex min-h-screen flex-col">
 
-Welcome to your new app.
+        <!-- Header Section -->
+        <header class="flex h-[60vh] items-center justify-center bg-gradient-to-br from-indigo-900 via-blue-700 to-blue-500 text-white">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">Connect. Purify. Empower.</h2>
+                <p class="mb-6 text-base sm:text-lg md:text-xl">
+                    Join AquaReach to request clean water solutions or support verified water relief initiatives. We ensure transparency, education, and impact.
+                </p>
+                <button class="rounded-lg bg-yellow-400 px-6 py-3 text-lg font-semibold text-blue-900 hover:bg-yellow-500">Get Started</button>
+            </div>
+        </header>
+
+        <!-- Middle Section with Background Image -->
+        <section class="relative flex items-center justify-center py-20 px-4">
+            <div class="absolute inset-0 z-0 flex items-center justify-center">
+                <img src="/images/landingpage1.png" alt="image" class="object-cover opacity-30 w-full h-full max-h-[80vh]" />
+            </div>
+            <div class="relative z-10 w-full max-w-7xl mx-auto text-center">
+                <h2 class="mb-12 text-3xl sm:text-4xl md:text-5xl font-bold">Why Choose Water4All?</h2>
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 px-4 sm:px-8 md:px-16">
+                    <!-- Card 1 -->
+                    <div class="relative transform rounded-lg bg-white p-6 text-center shadow-md -rotate-2">
+                        <img src="/Images/pin.png" alt="Pin" class="absolute -top-1 left-1/2 size-7 -translate-x-1/2" />
+                        <img src="/images/request.png" alt="icon" class="mx-auto mt-4 size-20 object-contain" />
+                        <h3 class="mb-4 mt-4 text-xl font-semibold">Request Clean Water Aid</h3>
+                        <p>Submit water-related concerns in your area through a simple form. We assess and respond with appropriate solutions.</p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="relative transform rounded-lg bg-white p-6 text-center shadow-md rotate-6">
+                        <img src="/Images/pin.png" alt="Pin" class="absolute -top-1 left-1/2 size-7 -translate-x-1/2" />
+                        <img src="/images/waterJar.png" alt="icon" class="mx-auto mt-4 mb-2 size-20 object-contain" />
+                        <h3 class="mb-4 text-xl font-semibold">Smart Resource Management</h3>
+                        <p>Our team coordinates with trusted vendors to allocate water supplies and purification kits based on local needs.</p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="relative transform rounded-lg bg-white p-6 text-center shadow-md rotate-2">
+                        <img src="/Images/pin.png" alt="Pin" class="absolute -top-1 left-1/2 size-7 -translate-x-1/2" />
+                        <img src="/images/waterman.png" alt="icon" class="mx-auto mt-4 mb-2 size-20 object-contain" />
+                        <h3 class="mb-4 text-xl font-semibold">Transparent Distribution</h3>
+                        <p>Track water deliveries and see how funding is used. Detailed reports offer full visibility into impact and logistics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="flex flex-col lg:flex-row gap-10 p-6 sm:p-10 lg:p-20 text-gray-700">
+            <div class="flex w-full lg:w-1/2 flex-col items-center justify-center text-center px-4">
+                <h2 class="mb-4 text-2xl sm:text-3xl font-bold">Learn About Water Purification</h2>
+                <p class="mb-6 text-base sm:text-lg">
+                    Get informed on safe water practices. Learn about boiling, chlorination, solar disinfection, and filtration—empowering you to make safe water decisions.
+                </p>
+                <button class="rounded-lg bg-yellow-400 px-6 py-3 text-lg font-semibold text-blue-900 hover:bg-yellow-500">Join Now</button>
+            </div>
+            <div class="w-full lg:w-1/2 flex items-center justify-center">
+                <img src="/images/landingpage2.png" alt="background" class="w-full max-w-md lg:max-w-full h-auto object-contain px-4" />
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 py-8 text-white text-center">
+            <p>&copy; 2025 Water4All. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
