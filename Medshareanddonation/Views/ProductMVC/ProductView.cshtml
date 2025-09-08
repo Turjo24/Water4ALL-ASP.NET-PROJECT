@@ -1,0 +1,205 @@
+﻿@{
+    ViewData["Title"] = "Products";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Medshare & Donation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-medical-kit text-white text-xl mr-2"></i>
+                <div class="flex items-center space-x-4">
+                    <span id="userStatus" class="text-white text-sm">Welcome</span>
+                    <div id="adminActions" class="hidden">
+                        <a href="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors mr-3">
+                            <i class="fas fa-plus mr-1"></i>Add Product
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Medical Products</h1>
+            <p class="text-xl text-gray-600">Browse our available medical supplies and donation items</p>
+            <div class="mt-6">
+                <button onclick="loadProducts()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh Products
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="flex justify-center items-center py-20">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p class="text-gray-600 text-lg">Loading products...</p>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 hidden">
+            <!-- Products will be dynamically loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-20">
+            <i class="fas fa-box-open text-6xl text-gray-300 mb-6"></i>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">No Products Available</h3>
+            <p class="text-gray-500 text-lg">There are currently no products to display.</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="hidden">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+                <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+                <h3 class="text-xl font-semibold text-red-700 mb-2">Failed to Load Products</h3>
+                <p class="text-red-600 mb-6">Unable to fetch products. Please try again later.</p>
+                <button onclick="loadProducts()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-redo mr-2"></i>Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://localhost:7217/api/ProductsApi';
+        let isAdmin = false;
+
+        // Check if user is admin
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const userRole = localStorage.getItem('userRole');
+
+            if (token && userRole === 'Admin') {
+                isAdmin = true;
+                document.getElementById('userStatus').textContent = 'Admin Panel';
+                document.getElementById('adminActions').classList.remove('hidden');
+            } else {
+                isAdmin = false;
+                document.getElementById('userStatus').textContent = 'Guest User';
+                document.getElementById('adminActions').classList.add('hidden');
+            }
+        }
+
+        // Get authorization headers
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        }
+
+        // Show/hide different states
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('productsGrid').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        function showProducts() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('productsGrid').classList.remove('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        function showEmpty() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('productsGrid').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        function showError() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('productsGrid').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+
+        // Load products using GET API
+        async function loadProducts() {
+            showLoading();
+
+            try {
+                const response = await fetch(BASE_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    }
+                });
+
+                if (response.ok) {
+                    const products = await response.json();
+                    displayProducts(products);
+                } else {
+                    console.error('Failed to load products:', response.status);
+                    showError();
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showError();
+            }
+        }
+
+        // Display products in grid
+        function displayProducts(products) {
+            if (products.length === 0) {
+                showEmpty();
+                return;
+            }
+
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(product => `
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="${product.imageUrl || 'https://via.placeholder.com/400x250?text=Medical+Product'}"
+                             alt="${product.name}"
+                             class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                                Available
+                            </span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">${product.description}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl font-bold text-blue-600">$${product.price}</span>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${product.category}</span>
+                        </div>
+                        <a href="Details/${product.id}"
+                           class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-all duration-300 text-center block font-semibold hover:shadow-lg transform hover:-translate-y-1">
+                            <i class="fas fa-eye mr-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            showProducts();
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            loadProducts();
+        });
+    </script>
+</body>
+</html>

@@ -2,16 +2,25 @@
 
 namespace Medshareanddonation.Controllers
 {
-    public class productMVCcontroller : Controller
+    public class ProductMVCController : Controller
     {
-        public IActionResult AdminProducts()
+        public IActionResult Create()
         {
             return View();
         }
 
-        public IActionResult UserProducts()
+        [Route("All")]
+        public IActionResult ProductView()
         {
             return View();
         }
+
+
+        public IActionResult Details()
+        {
+            return View();
+        }
+
+
     }
 }
