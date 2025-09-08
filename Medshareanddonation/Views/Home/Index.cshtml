@@ -6,45 +6,4 @@
     @(await Html.RenderComponentAsync<Medshareanddonation.Components.Pages.Home>(RenderMode.ServerPrerendered))
 </div>
 
-<script>
-    document.getElementById("btnProfile").addEventListener("click", async function() {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            alert("You are not logged in!");
-            return;
-        }
 
-        try {
-            // Fetch user data to determine role
-            const response = await fetch('/Profile/GetData', {
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                }
-            });
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    alert("Unauthorized! Please login again.");
-                    window.location.href = '/Login';
-                }
-                return;
-            }
-
-            const data = await response.json();
-            localStorage.setItem('userRole', data.role); // store role
-            localStorage.setItem('userName', data.userName);
-            localStorage.setItem('userEmail', data.email);
-
-            // Navigate directly to correct profile view
-            if (data.role === "Admin") {
-                window.location.href = '/Profile/AdminProfile';
-            } else {
-                window.location.href = '/Profile/UserProfile';
-            }
-
-        } catch (err) {
-            console.error('Error fetching profile:', err);
-            alert('Error fetching profile data');
-        }
-    });
-</script>

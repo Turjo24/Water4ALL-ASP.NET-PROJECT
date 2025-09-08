@@ -2,44 +2,74 @@
     ViewData["Title"] = "Admin Profile";
 }
 
-<h2>Admin Profile</h2>
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
 
-<p><strong>Name:</strong> <span id="userName">Loading...</span></p>
-<p><strong>Email:</strong> <span id="email">Loading...</span></p>
-<p><strong>Role:</strong> <span id="role">Loading...</span></p>
-<p><strong>Login Time:</strong> <span id="loginTime">Loading...</span></p>
+        <!-- Title -->
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
+            Admin Profile
+        </h2>
+
+        <!-- Profile Info -->
+        <div class="space-y-4 text-gray-700">
+            <div class="flex justify-between border-b pb-2">
+                <span class="font-semibold">👤 Name:</span>
+                <span id="userName" class="text-gray-600">Loading...</span>
+            </div>
+            <div class="flex justify-between border-b pb-2">
+                <span class="font-semibold">📧 Email:</span>
+                <span id="email" class="text-gray-600">Loading...</span>
+            </div>
+            <div class="flex justify-between border-b pb-2">
+                <span class="font-semibold">🎭 Role:</span>
+                <span id="role" class="text-gray-600">Loading...</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="font-semibold">⏰ Login Time:</span>
+                <span id="loginTime" class="text-gray-600">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-6 flex justify-center space-x-3">
+            <button id="updateBtn"
+                    class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
+                Update Name
+            </button>
+        </div>
+    </div>
+</div>
 
 <script>
-    async function loadProfile() {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            alert("No token found! Please login.");
-            return;
-        }
+    function loadProfileFromLocalStorage() {
+        // Get values from localStorage
+        const userName = localStorage.getItem("userName") || "Guest";
+        const email = localStorage.getItem("email") || "No Email";
+        const role = localStorage.getItem("role") || "User";
+        const loginTime = localStorage.getItem("loginTime") || new Date().toLocaleString();
 
-        try {
-            const response = await fetch('/Profile/GetData', {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
+        // Safely update UI elements
+        const userNameEl = document.getElementById('userName');
+        const emailEl = document.getElementById('email');
+        const roleEl = document.getElementById('role');
+        const loginTimeEl = document.getElementById('loginTime');
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    alert("Unauthorized! Please login again.");
-                    window.location.href = '/Login';
-                }
-                return;
-            }
-
-            const data = await response.json();
-            document.getElementById('userName').innerText = data.userName;
-            document.getElementById('email').innerText = data.email;
-            document.getElementById('role').innerText = data.role;
-            document.getElementById('loginTime').innerText = data.date;
-        } catch (err) {
-            console.error('Error loading profile:', err);
-            alert('Error loading profile');
-        }
+        if (userNameEl) userNameEl.innerText = userName;
+        if (emailEl) emailEl.innerText = email;
+        if (roleEl) roleEl.innerText = role;
+        if (loginTimeEl) loginTimeEl.innerText = loginTime;
     }
 
-    window.onload = loadProfile;
+    document.addEventListener("DOMContentLoaded", () => {
+        // Load profile from localStorage
+        loadProfileFromLocalStorage();
+
+        // Update button
+        const updateBtn = document.getElementById("updateBtn");
+        if (updateBtn) {
+            updateBtn.addEventListener("click", () => {
+                window.location.href = "/Profile/UpdateName";
+            });
+        }
+    });
 </script>
