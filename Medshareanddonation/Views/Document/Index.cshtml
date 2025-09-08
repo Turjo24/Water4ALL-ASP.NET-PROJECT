@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Water Purification Methods";
+    var initialSection = ViewData["Section"]?.ToString() ?? "Boiling";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+            html::-webkit-scrollbar, body::-webkit-scrollbar, #content-area::-webkit-scrollbar {
+                display: none;
+            }
+    </style>
+
+    <script>
+        function loadSection(section) {
+            const cleanSection = section.replace(/\s+/g, ''); // Remove spaces for URL
+            const url = `/Document/${encodeURIComponent(cleanSection)}`;
+
+            fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' } // Mark as AJAX
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('content-area').innerHTML = html;
+                window.history.pushState({ section }, '', url);
+                highlightActive(section);
+            })
+            .catch(() => {
+                document.getElementById('content-area').innerHTML = '<p>Error loading content.</p>';
+            });
+        }
+
+        // Highlight active sidebar item
+        function highlightActive(section) {
+            document.querySelectorAll('aside ul li').forEach(li => {
+                li.classList.remove('bg-blue-700');
+            });
+            const cleanSection = section.replace(/\s+/g, '');
+            const activeItem = document.querySelector(`aside ul li[data-section='${cleanSection}']`);
+            if (activeItem) {
+                activeItem.classList.add('bg-blue-700');
+            }
+        }
+
+        window.onpopstate = function(event) {
+            if (event.state && event.state.section) {
+                loadSection(event.state.section);
+            } else {
+                // fallback to default
+                loadSection('@initialSection');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load initial section on page load
+            loadSection('@initialSection');
+        });
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-indigo-900 via-blue-800 to-blue-700 text-white p-6 flex-shrink-0">
+            <h2 class="text-xl font-semibold mb-6 text-center">Options</h2>
+            <ul class="space-y-4">
+                <li data-section="Boiling" onclick="loadSection('Boiling')" class="cursor-pointer hover:bg-blue-700 rounded px-3 py-2 transition">Boiling</li>
+                <li data-section="Filtration" onclick="loadSection('Filtration')" class="cursor-pointer hover:bg-blue-700 rounded px-3 py-2 transition">Filtration</li>
+                <li data-section="ChemicalTreatment" onclick="loadSection('Chemical Treatment')" class="cursor-pointer hover:bg-blue-700 rounded px-3 py-2 transition">Chemical Treatment</li>
+                <li data-section="UVPurification" onclick="loadSection('UV Purification')" class="cursor-pointer hover:bg-blue-700 rounded px-3 py-2 transition">UV Purification</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-10" id="content-area" style="scrollbar-width: none; -ms-overflow-style: none;">
+            <p>Loading...</p>
+        </main>
+    </div>
+</body>
+</html>

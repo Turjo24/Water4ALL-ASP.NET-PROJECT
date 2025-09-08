@@ -1,0 +1,89 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediBridge - Water Purification</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- Hide Scrollbar -->
+    <style>
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none;
+            }
+    </style>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <main class="max-w-5xl mx-auto p-6 text-justify space-y-10">
+        <h1 class="text-3xl font-bold text-blue-800 mb-6">UV Light and Solar Disinfection</h1>
+
+        <!-- UV Light Section -->
+        <section>
+            <h2 class="text-2xl font-semibold text-blue-700 mb-4">Using UV Light</h2>
+            <p class="mb-4">
+                Portable units that deliver ultraviolet (UV) light can kill germs in small amounts of clear water.
+                However, UV light does not work well in <strong>cloudy water</strong> because particles can block germs from the light.
+            </p>
+
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-6">
+                <p>If the water is cloudy, filter it first using a clean cloth, paper towel, or coffee filter. Alternatively, let it settle and then draw off the clear water before using UV light.</p>
+            </div>
+
+            <p class="mb-6">Follow the instructions provided with your UV light unit to disinfect the clear water properly.</p>
+
+            <div class="mb-6 text-center">
+                <img src="~/Images/UV/UV.png" alt="Illustration of UV light wand in clear water" class="w-auto h-[50vh] mx-auto object-contain">
+                <p class="text-sm mt-2 text-gray-600">Portable UV Light Wand Disinfecting Water in a Glass.</p>
+            </div>
+        </section>
+
+        <!-- Solar Disinfection Section -->
+        <section>
+            <h2 class="text-2xl font-semibold text-blue-700 mb-4">Using Solar Disinfection</h2>
+            <p class="mb-4">
+                In emergency situations, the sun’s rays can help improve the quality of water by reducing the number of germs present.
+                However, solar disinfection is not effective in <strong>cloudy water</strong> for the same reason as UV light—particles block the sunlight.
+            </p>
+
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-6">
+                <p>Filter cloudy water first using a clean cloth, paper towel, or coffee filter, or let it settle before drawing off the clear water.</p>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4">Steps for Solar Disinfection</h3>
+            <ol class="list-decimal pl-6 text-gray-800 space-y-2 mb-6">
+                <li>Fill clean, clear plastic bottles with clear water.</li>
+                <li>Lay the bottles on their sides in direct sunlight for at least <strong>6 hours</strong> if sunny, or <strong>2 days</strong> if cloudy.</li>
+                <li>Laying the bottles on a dark surface can help the sun’s rays kill more germs.</li>
+            </ol>
+
+            <div class="mb-6 text-center">
+                <img src="~/Images/UV/UV-Photoroom.png" alt="Bottles laying in sun for disinfection" class="w-auto h-[50vh] mx-auto object-contain">
+                <p class="text-sm mt-2 text-gray-600">UV Disinfection Process for Water Purification.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
