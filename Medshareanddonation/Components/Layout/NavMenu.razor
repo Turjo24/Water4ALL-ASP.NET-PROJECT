@@ -1,112 +1,128 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Navbar - MedShare</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
-                primary: '#3B82F6',
-                secondary: '#10B981'
-              }
-            }
-          }
-        };
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Navbar - MedShare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#10B981',
+          },
+        },
+      },
+    };
+  </script>
 </head>
 
 <body class="bg-gray-100">
 
-    <!-- ✅ NAVBAR -->
-    <nav class="flex-shrink-0 bg-white text-black shadow-md">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6">
-            <div class="flex h-16 items-center justify-between">
+  <!-- ✅ NAVBAR -->
+  <nav class="flex-shrink-0 bg-white text-black shadow-md">
+    <div class=" px-4 sm:px-10">
+      <div class="flex h-16 items-center justify-between">
 
-                <!-- Logo / Brand -->
-                <div class="flex items-center">
-                    <a href="/" class="text-xl font-semibold transition-colors hover:text-gray-600">
-                        MyApp
-                    </a>
-                </div>
+        <!-- Logo / Brand -->
+        <div class="flex items-center space-x-6">
+          <a href="/" class="text-xl font-semibold transition-colors hover:text-gray-600">MyApp</a>
 
-                <!-- Navigation Links -->
-                <div class="hidden md:flex space-x-4">
-                    <a href="/" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Home</a>
-                    <a href="/about" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">About</a>
-                    <a href="/contact" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Contact</a>
-                </div>
-
-                <!-- Right Actions -->
-                <div id="navRightActions" class="flex items-center space-x-3 relative">
-                    <!-- Filled by JS -->
-                </div>
-
-            </div>
+          <!-- Always visible links -->
+          <div class="hidden md:flex space-x-4">
+            <a href="/" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Home</a>
+            <a href="/about" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">About</a>
+            <a href="/contact" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Contact</a>
+            <a href="/Document/Index" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Document</a>
+          </div>
         </div>
-    </nav>
 
-    <!-- ✅ LOGOUT & DASHBOARD SCRIPT -->
-    <script>
-        const navRight = document.getElementById('navRightActions');
-        const token = localStorage.getItem('token');
-        const role = localStorage.getItem('userRole'); // Make sure role is stored after login
+        <!-- Right side profile dropdown -->
+        <div id="navRightActions" class="relative"></div>
 
-        if (!token) {
-          // Show Sign Up if no token
-          navRight.innerHTML = `
-            <a href="/auth/signup" class="cursor-pointer rounded border border-gray-500 px-4 py-1 text-sm transition-colors hover:bg-gray-300">
-              Sign Up
-            </a>
-          `;
-        } else {
-          // Show Profile Icon with Dropdown
-          navRight.innerHTML = `
-            <div class="relative group">
-              <button class="focus:outline-none">
-                <!-- Profile Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-              </button>
+      </div>
+    </div>
+  </nav>
 
-              <!-- Dropdown -->
-              <div class="absolute right-0 z-50 mt-2 w-40 rounded-md border bg-white py-2 shadow-lg opacity-0 group-hover:opacity-100 group-hover:visible invisible transition-all duration-150">
-                <button id="dashboardBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Dashboard</button>
-                <button id="logoutBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Logout</button>
-              </div>
-            </div>
-          `;
+  <script>
+    const navRight = document.getElementById('navRightActions');
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('userRole');
 
-          // Attach events after rendering
-          setTimeout(() => {
-            // Logout
-            const logoutBtn = document.getElementById('logoutBtn');
-            logoutBtn?.addEventListener('click', function () {
-              localStorage.removeItem('token');
-              localStorage.removeItem('userId');
-              localStorage.removeItem('userName');
-              localStorage.removeItem('userRole');
-              window.location.href = "/auth/signin";
-            });
+    if (!token) {
+      // No user logged in - show sign up
+      navRight.innerHTML = `
+        <a href="/auth/signup" class="cursor-pointer rounded border border-gray-500 px-4 py-1 text-sm transition-colors hover:bg-gray-300">
+          Sign Up
+        </a>
+      `;
+    } else {
+      // Prepare role-based options
+      let roleOptionsHTML = '';
+      if (role === 'Admin') {
+        roleOptionsHTML = `
+          <a href="https://localhost:7217/DonationMVC/Allrequests" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">All Donation Requests</a>
+          <a href="https://localhost:7217/ProductMVC/create" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Create Product</a>
+        `;
+      } else {
+        // User role
+        roleOptionsHTML = `
+          <a href="https://localhost:7217/DonationMVC/create" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Donation Request</a>
+          <a href="https://localhost:7217/DonationMVC/MyRequests" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Donation Requested History</a>
+        `;
+      }
 
-            // Dashboard redirect
-            const dashboardBtn = document.getElementById('dashboardBtn');
-            dashboardBtn?.addEventListener('click', function () {
-              const role = localStorage.getItem('userRole');
-              if (role === 'Admin') {
-                window.location.href = '/Profile/AdminProfile';
-              } else {
-                window.location.href = '/Profile/UserProfile';
-              }
-            });
-          }, 0);
-        }
-    </script>
+      navRight.innerHTML = `
+        <div class="relative group">
+          <button class="focus:outline-none" aria-label="User menu">
+            <!-- Profile Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+
+          <!-- Dropdown -->
+          <div class="absolute right-0 z-50 mt-2 w-56 rounded-md border bg-white py-2 shadow-lg opacity-0 group-hover:opacity-100 group-hover:visible invisible transition-all duration-150">
+
+            <!-- Role-specific options -->
+            ${roleOptionsHTML}
+
+            <hr class="my-1 border-gray-300">
+
+            <!-- Dashboard and Logout -->
+            <button id="dashboardBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Dashboard</button>
+            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Logout</button>
+
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => {
+        // Logout button
+        const logoutBtn = document.getElementById('logoutBtn');
+        logoutBtn?.addEventListener('click', () => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userName');
+          localStorage.removeItem('userRole');
+          window.location.href = '/auth/signin';
+        });
+
+        // Dashboard redirect
+        const dashboardBtn = document.getElementById('dashboardBtn');
+        dashboardBtn?.addEventListener('click', () => {
+          if (role === 'Admin') {
+            window.location.href = '/Profile/AdminProfile';
+          } else {
+            window.location.href = '/Profile/UserProfile';
+          }
+        });
+      }, 0);
+    }
+  </script>
 
 </body>
 </html>
