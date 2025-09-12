@@ -32,8 +32,9 @@ namespace Medshareanddonation.Controllers
                                               p.Name,
                                               p.Description,
                                               p.Price,
-                                              Category = p.Category.Name,
-                                              p.ImageUrl
+                                              Category = p.Category != null ? p.Category.Name : null,
+                                              p.ImageUrl,
+                                              p.IsActive
                                           })
                                           .ToListAsync();
             return Ok(prods);
@@ -44,10 +45,29 @@ namespace Medshareanddonation.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Get(int id)
         {
-            var p = await _db.Products.Include(x => x.Category)
-                                      .FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
-            if (p == null) return NotFound();
-            return Ok(p);
+            var product = await _db.Products.Include(x => x.Category)
+                                           .FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
+
+            if (product == null) return NotFound();
+
+            // Create a response object without circular references
+            var response = new
+            {
+                product.Id,
+                product.Name,
+                product.Description,
+                product.Price,
+                product.CategoryId,
+                Category = product.Category != null ? new
+                {
+                    product.Category.Id,
+                    product.Category.Name
+                } : null,
+                product.ImageUrl,
+                product.IsActive
+            };
+
+            return Ok(response);
         }
 
         // POST: api/products
