@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ApplicationUser = Medshareanddonation.Data.ApplicationUser;
 
 namespace Medshareanddonation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DonationController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -28,7 +30,6 @@ namespace Medshareanddonation.Controllers
           )
         {
             _context = context;
-            _userManager = userManager;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;

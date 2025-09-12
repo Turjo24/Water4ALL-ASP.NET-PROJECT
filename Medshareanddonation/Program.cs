@@ -41,11 +41,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 //  Register ProfileService
 builder.Services.AddScoped<IProfileService, ProfileService>();
 
-//  JWT Authentication
+//  Authentication: Use Identity cookies for MVC; JWT for APIs
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
 })
 .AddJwtBearer(options =>
 {
@@ -63,6 +63,33 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+
+// Configure Identity cookie paths and prevent API redirects to HTML login
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Auth/SignIn";
+    options.AccessDeniedPath = "/Auth/SignIn";
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();

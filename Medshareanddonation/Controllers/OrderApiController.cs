@@ -134,5 +134,58 @@ namespace Medshareanddonation.Controllers
             await _db.SaveChangesAsync();
             return NoContent();
         }
+
+        // ADMIN: GET all orders
+        // GET: api/OrdersApi/admin
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+        {
+            var orders = await _db.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .AsNoTracking()
+                .ToListAsync();
+            return Ok(orders);
+        }
+
+        // ADMIN: DELETE any single order
+        // DELETE: api/OrdersApi/admin/5
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("admin/{id}")]
+        public async Task<IActionResult> AdminDeleteOrder(int id)
+        {
+            var order = await _db.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null)
+                return NotFound();
+
+            _db.Orders.Remove(order);
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // ADMIN: DELETE multiple orders
+        // DELETE: api/OrdersApi/admin
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("admin")]
+        public async Task<IActionResult> AdminDeleteOrders([FromBody] int[] orderIds)
+        {
+            if (orderIds == null || orderIds.Length == 0)
+                return BadRequest();
+
+            var orders = await _db.Orders
+                .Where(o => orderIds.Contains(o.Id))
+                .Include(o => o.OrderItems)
+                .ToListAsync();
+
+            if (orders.Count == 0)
+                return NotFound();
+
+            _db.Orders.RemoveRange(orders);
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
