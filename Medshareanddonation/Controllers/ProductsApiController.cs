@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Medshareanddonation.Data;
 using Medshareanddonation.Models;
 
@@ -8,7 +9,7 @@ namespace Medshareanddonation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")] // Only admins can manage products
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")] // Only admins can manage products via JWT
     public class ProductsApiController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

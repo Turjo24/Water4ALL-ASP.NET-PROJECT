@@ -2,7 +2,7 @@
 
 namespace Medshareanddonation.Controllers
 {
-    public class Authcontroller : Controller
+    public class AuthController : Controller
     {
         // GET: /Auth/SignUp
         public IActionResult SignUp()

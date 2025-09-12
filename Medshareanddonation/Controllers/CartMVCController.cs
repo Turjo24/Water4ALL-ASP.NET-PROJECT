@@ -211,6 +211,13 @@ namespace Medshareanddonation.Controllers
                 .FirstOrDefaultAsync(o => o.Id == id);
             if (order == null) return NotFound();
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+            if (!isAdmin && order.UserId != userId)
+            {
+                return Forbid();
+            }
+
             return View(order);
         }
     }
