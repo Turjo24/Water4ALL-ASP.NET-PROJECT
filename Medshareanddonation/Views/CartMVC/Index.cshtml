@@ -1,0 +1,196 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="/All" class="text-gray-600 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Continue Shopping
+                    </a>
+                    <span class="text-gray-300">|</span>
+                    <span class="text-gray-500">Your Cart</span>
+                </div>
+                <a href="/CartMVC" class="text-blue-600 hover:text-blue-700 font-semibold">
+                    <i class="fas fa-shopping-cart mr-2"></i>Cart
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div id="emptyCart" class="hidden">
+            <div class="bg-white rounded-2xl shadow p-12 text-center">
+                <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shopping-cart text-2xl text-gray-500"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+                <p class="text-gray-600 mb-6">Browse products and add items to your cart.</p>
+                <a href="/All" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Go to Products
+                </a>
+            </div>
+        </div>
+
+        <div id="cartContainer" class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-4" id="cartItems"></div>
+
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
+                    <div class="flex justify-between text-gray-700 mb-2">
+                        <span>Subtotal</span>
+                        <span id="subtotal">৳0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-700 mb-4">
+                        <span>Shipping</span>
+                        <span>৳0</span>
+                    </div>
+                    <div class="border-t pt-4 flex justify-between text-gray-900 font-bold text-lg">
+                        <span>Total</span>
+                        <span id="total">৳0</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow p-6 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Checkout</h3>
+                    <form id="checkoutForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="shippingName" class="w-full border rounded-lg px-3 py-2" required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                            <input type="tel" id="shippingPhone" class="w-full border rounded-lg px-3 py-2" required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                            <textarea id="shippingAddress" class="w-full border rounded-lg px-3 py-2" rows="3" required></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                <input type="text" id="city" class="w-full border rounded-lg px-3 py-2" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                                <input type="text" id="postalCode" class="w-full border rounded-lg px-3 py-2" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                            <select id="paymentMethod" class="w-full border rounded-lg px-3 py-2">
+                                <option>Cash on Delivery</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold">
+                            <i class="fas fa-check mr-2"></i>Place Order
+                        </button>
+                        <p id="checkoutError" class="hidden text-red-600 text-sm mt-2"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GET_CART_URL = '/CartMVC/GetCart';
+        const CHECKOUT_URL = '/CartMVC/Checkout';
+
+        function authHeaders() {
+            const token = localStorage.getItem('token');
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        }
+
+        function formatCurrency(amount) {
+            return `৳${amount.toFixed(2)}`;
+        }
+
+        async function loadCart() {
+            const res = await fetch(GET_CART_URL, { headers: { 'Content-Type': 'application/json', ...authHeaders() } });
+            if (!res.ok) { return renderEmpty(); }
+            const data = await res.json();
+            if (!data.items || data.items.length === 0) { return renderEmpty(); }
+            renderCart(data.items, data.total);
+        }
+
+        function renderEmpty() {
+            document.getElementById('emptyCart').classList.remove('hidden');
+            document.getElementById('cartContainer').classList.add('hidden');
+        }
+
+        function renderCart(items, total) {
+            document.getElementById('emptyCart').classList.add('hidden');
+            document.getElementById('cartContainer').classList.remove('hidden');
+
+            const container = document.getElementById('cartItems');
+            container.innerHTML = '';
+
+            items.forEach(it => {
+                const row = document.createElement('div');
+                row.className = 'bg-white rounded-2xl shadow p-4 flex items-center gap-4';
+                row.innerHTML = `
+                    <img src="${it.product?.imageUrl || 'https://via.placeholder.com/80'}" alt="${it.product?.name || ''}" class="w-20 h-20 object-cover rounded-lg border"/>
+                    <div class="flex-1">
+                        <div class="font-semibold text-gray-900">${it.product?.name || 'Product'}</div>
+                        <div class="text-gray-600 text-sm">Qty: ${it.quantity}</div>
+                    </div>
+                    <div class="font-semibold text-gray-900">${formatCurrency(it.totalPrice)}</div>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('subtotal').textContent = formatCurrency(total);
+            document.getElementById('total').textContent = formatCurrency(total);
+        }
+
+        async function handleCheckout(e) {
+            e.preventDefault();
+            const payload = {
+                shippingName: document.getElementById('shippingName').value,
+                shippingPhone: document.getElementById('shippingPhone').value,
+                shippingAddress: document.getElementById('shippingAddress').value,
+                city: document.getElementById('city').value,
+                postalCode: document.getElementById('postalCode').value,
+                paymentMethod: document.getElementById('paymentMethod').value,
+            };
+
+            const res = await fetch(CHECKOUT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const redirectUrl = data.redirectUrl || `/CartMVC/OrderComplete/${data.orderId}`;
+                window.location.href = redirectUrl;
+            } else if (res.status === 401) {
+                document.getElementById('checkoutError').textContent = 'Please sign in to place your order.';
+                document.getElementById('checkoutError').classList.remove('hidden');
+            } else {
+                const err = await res.json().catch(() => ({ message: 'Checkout failed' }));
+                document.getElementById('checkoutError').textContent = err.message || 'Checkout failed';
+                document.getElementById('checkoutError').classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCart();
+            document.getElementById('checkoutForm').addEventListener('submit', handleCheckout);
+        });
+    </script>
+</body>
+</html>
+
+
