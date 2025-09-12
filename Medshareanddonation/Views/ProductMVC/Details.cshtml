@@ -1,1 +1,366 @@
-﻿
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Medshare & Donation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Loading State -->
+    <div id="loadingState" class="flex justify-center items-center min-h-screen">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-gray-600 text-lg">Loading product details...</p>
+        </div>
+    </div>
+
+    <!-- Product Details -->
+    <div id="productDetails" class="hidden">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <a href="/All" class="text-gray-600 hover:text-blue-600 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Products
+                        </a>
+                        <span class="text-gray-300">|</span>
+                        <span class="text-gray-500">Product Details</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="lg:grid lg:grid-cols-2 lg:gap-8">
+                    <!-- Product Image -->
+                    <div class="relative">
+                        <div class="aspect-square lg:aspect-auto lg:h-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <img id="productImage"
+                                 src=""
+                                 alt="Product Image"
+                                 class="w-full h-full object-contain hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="absolute top-6 left-6">
+                            <span id="availabilityBadge" class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                                <i class="fas fa-check-circle mr-1"></i>Available
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Product Information -->
+                    <div class="p-8 lg:p-12 flex flex-col justify-between">
+                        <div>
+                            <!-- Category -->
+                            <div class="mb-4">
+                                <span id="productCategory" class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium"></span>
+                            </div>
+
+                            <!-- Product Name -->
+                            <h1 id="productName" class="text-4xl font-bold text-gray-900 mb-6 leading-tight"></h1>
+
+                            <!-- Price -->
+                            <div class="mb-8">
+                                <div class="flex items-baseline space-x-2">
+                                    <span id="productPrice" class="text-5xl font-bold text-blue-600"></span>
+                                    <span class="text-xl text-gray-500">BDT</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-2">Price includes all applicable taxes</p>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-8">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                                    <i class="fas fa-info-circle mr-2 text-blue-600"></i>Product Description
+                                </h3>
+                                <p id="productDescription" class="text-gray-700 text-lg leading-relaxed bg-gray-50 p-6 rounded-xl"></p>
+                            </div>
+
+                            <!-- Product Features -->
+                            <div class="mb-8">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                                    <i class="fas fa-star mr-2 text-yellow-500"></i>Key Features
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex items-center space-x-3 bg-green-50 p-4 rounded-lg">
+                                        <i class="fas fa-shield-alt text-green-600"></i>
+                                        <span class="text-green-800 font-medium">Quality Assured</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3 bg-blue-50 p-4 rounded-lg">
+                                        <i class="fas fa-shipping-fast text-blue-600"></i>
+                                        <span class="text-blue-800 font-medium">Fast Delivery</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3 bg-purple-50 p-4 rounded-lg">
+                                        <i class="fas fa-certificate text-purple-600"></i>
+                                        <span class="text-purple-800 font-medium">Certified Product</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3 bg-orange-50 p-4 rounded-lg">
+                                        <i class="fas fa-headset text-orange-600"></i>
+                                        <span class="text-orange-800 font-medium">24/7 Support</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="space-y-4">
+                            <!-- Quantity Selector -->
+                            <div class="flex items-center space-x-4 mb-6">
+                                <label class="text-lg font-semibold text-gray-700">Quantity:</label>
+                                <div class="flex items-center border border-gray-300 rounded-lg">
+                                    <button id="decreaseQty" class="px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span id="quantity" class="px-6 py-2 bg-gray-50 border-l border-r border-gray-300 font-semibold">1</span>
+                                    <button id="increaseQty" class="px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Add to Cart Button -->
+                            <button id="addToCartBtn"
+                                    class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 px-8 rounded-xl font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
+                                <i class="fas fa-cart-plus mr-3"></i>Add to Cart
+                            </button>
+
+                            <!-- Additional Actions -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-6 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg">
+                                    <i class="fas fa-heart mr-2"></i>Add to Wishlist
+                                </button>
+                                <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 py-3 px-6 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg">
+                                    <i class="fas fa-share-alt mr-2"></i>Share Product
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information Section -->
+            <div class="mt-12 bg-white rounded-2xl shadow-lg p-8">
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Delivery Information -->
+                    <div class="text-center">
+                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-truck text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Free Delivery</h3>
+                        <p class="text-gray-600">Free delivery for orders above ৳1000 within Dhaka</p>
+                    </div>
+
+                    <!-- Return Policy -->
+                    <div class="text-center">
+                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-chart-simple text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Quality You Can Trust</h3>
+                        <p class="text-gray-600">All products are carefully tested to meet the highest standards of water purification.</p>
+                    </div>
+
+                    <!-- Support -->
+                    <div class="text-center">
+                        <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-phone text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 Support</h3>
+                        <p class="text-gray-600">Round-the-clock customer support for all inquiries</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden min-h-screen flex items-center justify-center">
+        <div class="text-center bg-white rounded-2xl shadow-xl p-12 max-w-md mx-4">
+            <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h2>
+            <p class="text-gray-600 mb-8">The product you're looking for doesn't exist or has been removed.</p>
+            <a href="/All"
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Products
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://localhost:7217/api/ProductsApi';
+        const CART_URL = '/CartMVC/AddToCart';
+        let currentProduct = null;
+        let quantity = 1;
+
+        // Get product ID from URL path
+        function getProductIdFromUrl() {
+            const path = window.location.pathname;
+            const matches = path.match(/\/ProductMVC\/Details\/(\d+)/);
+            return matches ? parseInt(matches[1]) : null;
+        }
+
+        const productId = getProductIdFromUrl();
+
+        // Get authorization headers
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        }
+
+        // Show different states
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('productDetails').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        function showProductDetails() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('productDetails').classList.remove('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        function showError() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('productDetails').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+
+        // Load product details
+        async function loadProductDetails() {
+            if (!productId) {
+                console.error('No product ID found in URL');
+                showError();
+                return;
+            }
+
+            showLoading();
+            try {
+                const response = await fetch(`${BASE_URL}/${productId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    }
+                });
+
+                if (response.ok) {
+                    currentProduct = await response.json();
+                    displayProductDetails(currentProduct);
+                    showProductDetails();
+                } else if (response.status === 404) {
+                    console.error('Product not found:', productId);
+                    showError();
+                } else {
+                    console.error('Failed to load product:', response.status);
+                    showError();
+                }
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showError();
+            }
+        }
+
+        // Display product details
+        function displayProductDetails(product) {
+            // Update page title
+            document.title = `${product.name} - Medshare & Donation`;
+
+            // Update product information
+            document.getElementById('productImage').src = product.imageUrl || 'https://via.placeholder.com/600x600?text=Medical+Product';
+            document.getElementById('productImage').alt = product.name;
+            document.getElementById('productName').textContent = product.name;
+            document.getElementById('productDescription').textContent = product.description || 'No description available';
+            document.getElementById('productPrice').textContent = `৳${product.price}`;
+
+            // Handle category display
+            const categoryElement = document.getElementById('productCategory');
+            if (product.category && product.category.name) {
+                categoryElement.textContent = product.category.name;
+                categoryElement.style.display = 'inline-block';
+            } else {
+                categoryElement.style.display = 'none';
+            }
+
+            // Update availability badge
+            const availabilityBadge = document.getElementById('availabilityBadge');
+            if (product.isActive) {
+                availabilityBadge.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Available';
+                availabilityBadge.className = 'bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg';
+            } else {
+                availabilityBadge.innerHTML = '<i class="fas fa-times-circle mr-1"></i>Out of Stock';
+                availabilityBadge.className = 'bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg';
+            }
+        }
+
+        // Quantity management
+        function updateQuantity(newQuantity) {
+            if (newQuantity < 1) return;
+            quantity = newQuantity;
+            document.getElementById('quantity').textContent = quantity;
+        }
+
+        // Add to cart functionality
+        async function addToCart() {
+            if (!currentProduct) return;
+
+            try {
+                const response = await fetch(CART_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders(),
+                    },
+                    body: JSON.stringify({
+                        productId: currentProduct.id,
+                        quantity: quantity
+                    })
+                });
+
+                if (response.ok) {
+                    // Show success message with animation
+                    const addToCartBtn = document.getElementById('addToCartBtn');
+                    const originalText = addToCartBtn.innerHTML;
+                    addToCartBtn.innerHTML = '<i class="fas fa-check mr-3"></i>Added to Cart!';
+                    addToCartBtn.classList.add('bg-green-600');
+
+                    setTimeout(() => {
+                        addToCartBtn.innerHTML = originalText;
+                        addToCartBtn.classList.remove('bg-green-600');
+                    }, 2000);
+
+                } else {
+                    alert('Failed to add product to cart.');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('An error occurred while adding to cart.');
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load product details
+            loadProductDetails();
+
+            // Quantity controls
+            document.getElementById('decreaseQty').addEventListener('click', () => {
+                updateQuantity(quantity - 1);
+            });
+
+            document.getElementById('increaseQty').addEventListener('click', () => {
+                updateQuantity(quantity + 1);
+            });
+
+            // Add to cart button
+            document.getElementById('addToCartBtn').addEventListener('click', addToCart);
+        });
+    </script>
+</body>
+</html>
