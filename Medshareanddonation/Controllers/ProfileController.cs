@@ -17,21 +17,14 @@ namespace Medshareanddonation.Controllers
             _profileService = profileService;
         }
 
-        [HttpGet("AdminProfile")]
-        public IActionResult AdminProfile()
-        {
-            return View("AdminProfile");
-        }
-
         [HttpGet("UserProfile")]
         public IActionResult UserProfile()
         {
-            return View("UserProfile");
+            return View();
         }
 
-        // Get user data from JWT
-        [HttpGet("GetData")]
-        public IActionResult GetData()
+        [HttpGet("GetProfile")]
+        public async Task<IActionResult> GetProfile()
         {
             var authHeader = Request.Headers["Authorization"].FirstOrDefault();
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
@@ -40,43 +33,32 @@ namespace Medshareanddonation.Controllers
             var token = authHeader.Substring("Bearer ".Length).Trim();
             var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
-            var userName = jwt.Claims.FirstOrDefault(c =>
-       c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-   )?.Value ?? "Guest";
-            var email = jwt.Claims.FirstOrDefault(c => c.Type.Contains("email") || c.Type == ClaimTypes.Email)?.Value ?? "No Email";
-            var role = jwt.Claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value ?? "User";
-            var date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var userId = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("Invalid token");
 
-            return Json(new { userName, email, role, date });
-        }
+            var userProfile = await _profileService.GetUserProfileAsync(userId);
+            if (userProfile == null)
+                return NotFound("User not found");
 
-        // GET: Update Name Page
-        [HttpGet("UpdateName")]
-        public IActionResult UpdateName()
-        {
-            string currentName = "";
-            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            var currentDateTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
-            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+            return Json(new
             {
-                var token = authHeader.Substring("Bearer ".Length).Trim();
-                try
-                {
-                    var payload = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                    currentName = payload.Claims.FirstOrDefault(c => c.Type.Contains("name"))?.Value ?? "";
-                }
-                catch { }
-            }
-
-            return View(model: currentName);
+                name = userProfile.name,
+                userName = userProfile.UserName,
+                email = userProfile.Email,
+                role = userProfile.Role,
+                createdAt = currentDateTime,
+                updatedAt = currentDateTime
+            });
         }
 
-        // POST: Permanently update username
-        [HttpPost("UpdateName")]
-        public async Task<IActionResult> UpdateName([FromBody] UpdateNameRequest request)
+        [HttpPost("UpdateProfile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.NewName))
-                return BadRequest("Username cannot be empty");
+            if (string.IsNullOrWhiteSpace(request.NewName) || string.IsNullOrWhiteSpace(request.NewUserName))
+                return BadRequest("Name and Username cannot be empty");
 
             var authHeader = Request.Headers["Authorization"].FirstOrDefault();
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
@@ -89,17 +71,28 @@ namespace Medshareanddonation.Controllers
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("Invalid token");
 
-            // Update username permanently in the database
-            var success = await _profileService.UpdateUserNameAsync(userId, request.NewName);
+            var success = await _profileService.UpdateNameAndUserNameAsync(userId, request.NewName, request.NewUserName);
             if (!success)
                 return BadRequest("Update failed");
 
-            return Ok(new { success = true, newName = request.NewName });
+            var updatedProfile = await _profileService.GetUserProfileAsync(userId);
+            var currentDateTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            return Ok(new
+            {
+                success = true,
+                name = updatedProfile.name,
+                userName = updatedProfile.UserName,
+                email = updatedProfile.Email,
+                role = updatedProfile.Role,
+                updatedAt = currentDateTime
+            });
         }
     }
 
-    public class UpdateNameRequest
+    public class UpdateProfileRequest
     {
         public string NewName { get; set; }
+        public string NewUserName { get; set; }
     }
 }

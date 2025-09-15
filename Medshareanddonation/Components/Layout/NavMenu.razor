@@ -10,7 +10,7 @@
       theme: {
         extend: {
           colors: {
-            primary: '#3B82F6',
+                primary: '#3B82F6',<NavMenu />
             secondary: '#10B981',
           },
         },
@@ -111,15 +111,12 @@
           window.location.href = '/auth/signin';
         });
 
-        // Dashboard redirect
-        const dashboardBtn = document.getElementById('dashboardBtn');
-        dashboardBtn?.addEventListener('click', () => {
-          if (role === 'Admin') {
-            window.location.href = '/Profile/AdminProfile';
-          } else {
+       // Dashboard redirect
+       const dashboardBtn = document.getElementById('dashboardBtn');
+       dashboardBtn?.addEventListener('click', () => {
             window.location.href = '/Profile/UserProfile';
-          }
-        });
+       });
+
       }, 0);
     }
   </script>
