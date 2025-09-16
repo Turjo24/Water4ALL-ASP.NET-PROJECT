@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Views\Donation\" />
+    <Folder Include="Views\Orders\" />
   </ItemGroup>
 
 </Project>

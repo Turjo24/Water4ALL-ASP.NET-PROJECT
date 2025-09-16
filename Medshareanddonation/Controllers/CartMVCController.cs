@@ -1,9 +1,10 @@
-using Medshareanddonation.Data;
+﻿using Medshareanddonation.Data;
 using Medshareanddonation.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -28,6 +29,7 @@ namespace Medshareanddonation.Controllers
             return View();
         }
 
+        // ----- Session Cart Helpers -----
         private List<CartItem> GetCart()
         {
             var json = HttpContext.Session.GetString(SessionCartKey);
@@ -49,6 +51,7 @@ namespace Medshareanddonation.Controllers
             HttpContext.Session.SetString(SessionCartKey, json);
         }
 
+        // ----- Add Item to Cart -----
         public class AddToCartRequest
         {
             public int ProductId { get; set; }
@@ -65,19 +68,13 @@ namespace Medshareanddonation.Controllers
 
             var product = await _db.Products.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == request.ProductId && p.IsActive);
-            if (product == null)
-                return NotFound(new { message = "Product not found" });
+            if (product == null) return NotFound(new { message = "Product not found" });
 
             var cart = GetCart();
             var existing = cart.FirstOrDefault(ci => ci.ProductId == request.ProductId);
             if (existing == null)
             {
-                cart.Add(new CartItem
-                {
-                    ProductId = product.Id,
-                    Quantity = request.Quantity,
-                    Price = product.Price
-                });
+                cart.Add(new CartItem { ProductId = product.Id, Quantity = request.Quantity, Price = product.Price });
             }
             else
             {
@@ -86,32 +83,24 @@ namespace Medshareanddonation.Controllers
             }
 
             SaveCart(cart);
-
-            return Ok(new
-            {
-                message = "Added to cart",
-                cartCount = cart.Sum(i => i.Quantity)
-            });
+            return Ok(new { message = "Added to cart", cartCount = cart.Sum(i => i.Quantity) });
         }
 
+        // ----- Get Cart Items -----
         [HttpGet("GetCart")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCartItems()
         {
             var cart = GetCart();
             if (cart.Count == 0)
-            {
                 return Ok(new { items = Array.Empty<object>(), total = 0m });
-            }
 
             var productMap = new Dictionary<int, Product>();
             foreach (var id in cart.Select(c => c.ProductId).Distinct())
             {
                 var prod = await _db.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
                 if (prod != null)
-                {
                     productMap[id] = prod;
-                }
             }
 
             var result = cart.Select(ci => new
@@ -120,20 +109,13 @@ namespace Medshareanddonation.Controllers
                 ci.Quantity,
                 ci.Price,
                 TotalPrice = ci.TotalPrice,
-                Product = productMap.TryGetValue(ci.ProductId, out var p) ? new
-                {
-                    p.Name,
-                    p.ImageUrl
-                } : null
+                Product = productMap.TryGetValue(ci.ProductId, out var p) ? new { p.Name, p.ImageUrl } : null
             }).ToList();
 
-            return Ok(new
-            {
-                items = result,
-                total = result.Sum(r => r.TotalPrice)
-            });
+            return Ok(new { items = result, total = result.Sum(r => r.TotalPrice) });
         }
 
+        // ----- Checkout -----
         public class CheckoutRequest
         {
             public string ShippingName { get; set; }
@@ -142,23 +124,26 @@ namespace Medshareanddonation.Controllers
             public string? City { get; set; }
             public string? PostalCode { get; set; }
             public string PaymentMethod { get; set; } = "Cash on Delivery";
-            public string? Notes { get; set; }
         }
 
         [HttpPost("Checkout")]
-        [IgnoreAntiforgeryToken]
-        [Authorize]
+        
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Checkout([FromBody] CheckoutRequest request)
         {
+            
             var cart = GetCart();
-            if (cart.Count == 0) return BadRequest(new { message = "Cart is empty" });
+            if (cart.Count == 0)
+                return BadRequest(new { message = "Cart is empty" });
 
-            // Refresh prices and calculate totals from DB
+            
             var productMap = new Dictionary<int, Product>();
             foreach (var id in cart.Select(c => c.ProductId).Distinct())
             {
                 var prod = await _db.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-                if (prod == null || !prod.IsActive) return BadRequest(new { message = "One or more items are unavailable" });
+                if (prod == null || !prod.IsActive)
+                    return BadRequest(new { message = "One or more items are unavailable" });
+
                 productMap[id] = prod;
             }
 
@@ -182,7 +167,6 @@ namespace Medshareanddonation.Controllers
                 City = request.City,
                 PostalCode = request.PostalCode,
                 PaymentMethod = request.PaymentMethod,
-                Notes = request.Notes,
                 OrderItems = cart.Select(ci => new OrderItem
                 {
                     ProductId = ci.ProductId,
@@ -195,32 +179,41 @@ namespace Medshareanddonation.Controllers
             _db.Orders.Add(order);
             await _db.SaveChangesAsync();
 
-            // Clear cart
             SaveCart(new List<CartItem>());
 
-            return Ok(new { orderId = order.Id, redirectUrl = Url.Action("OrderComplete", new { id = order.Id }) });
+            HttpContext.Session.SetInt32("LastOrderId", order.Id);
+
+
+
+            return Ok(new
+            {
+                
+                redirectUrl = $"/CartMVC/OrderComplete"
+            });
+
         }
 
-        [HttpGet("OrderComplete/{id:int}")]
-        [Authorize]
-        public async Task<IActionResult> OrderComplete(int id)
+
+        [HttpGet("OrderComplete")]
+        [AllowAnonymous]
+        public async Task<IActionResult> OrderComplete()
         {
+            var orderId = HttpContext.Session.GetInt32("LastOrderId");
+            if (orderId == null)
+                return RedirectToAction("Index");
+
             var order = await _db.Orders
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(o => o.Id == id);
+         .Include(o => o.OrderItems)
+         .ThenInclude(oi => oi.Product)
+         .FirstOrDefaultAsync(o => o.Id == orderId.Value);
+
             if (order == null) return NotFound();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isAdmin = User.IsInRole("Admin");
-            if (!isAdmin && order.UserId != userId)
-            {
-                return Forbid();
-            }
+            
 
             return View(order);
         }
+
+
     }
 }
-
-
