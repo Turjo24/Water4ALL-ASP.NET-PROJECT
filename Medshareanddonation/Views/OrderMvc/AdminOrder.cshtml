@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Admin - All Orders";
+}
+
+<h1>All Orders (Admin)</h1>
+
+<table id="ordersTable" border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>Order Id</th>
+            <th>User Id</th>
+            <th>Order Date</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Shipping Info</th>
+            <th>Payment Method</th>
+            <th>Items</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    async function fetchOrders() {
+        try {
+            // JWT token stored in localStorage
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("No admin token found");
+                return;
+            }
+
+            const response = await fetch("/api/OrdersApi/AllOrders", {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                alert("Failed to fetch orders");
+                return;
+            }
+
+            const orders = await response.json();
+            renderOrders(orders);
+        } catch (err) {
+            console.error(err);
+            alert("Error fetching orders");
+        }
+    }
+
+    function renderOrders(orders) {
+        const tbody = document.querySelector("#ordersTable tbody");
+        tbody.innerHTML = "";
+
+        orders.forEach(order => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${order.id}</td>
+                <td>${order.userId}</td>
+                <td>${new Date(order.orderDate).toLocaleString()}</td>
+                <td>${order.totalAmount.toFixed(2)}</td>
+                <td>${order.status}</td>
+                <td>
+                    ${order.shippingName}<br>
+                    ${order.shippingPhone}<br>
+                    ${order.shippingAddress}, ${order.city}, ${order.postalCode}
+                </td>
+                <td>${order.paymentMethod}</td>
+                <td>
+                    <table border="0" cellpadding="2">
+                        <thead>
+                            <tr>
+                                <th>Product Id</th>
+                                <th>Name</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.items.map(item => `
+                                <tr>
+                                    <td>${item.productId}</td>
+                                    <td>${item.productName}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.unitPrice.toFixed(2)}</td>
+                                    <td>${item.totalPrice.toFixed(2)}</td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Fetch orders on page load
+    fetchOrders();
+</script>

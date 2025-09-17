@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h1>My Orders</h1>
+
+<table id="myOrdersTable" border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>Order Id</th>
+            <th>Order Date</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Items</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    async function fetchMyOrders() {
+        try {
+            const token = localStorage.getItem("token"); // JWT token
+            if (!token) {
+                alert("No user token found");
+                return;
+            }
+
+            const response = await fetch("/api/OrdersApi/MyOrders", {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                alert("Failed to fetch orders");
+                return;
+            }
+
+            const orders = await response.json();
+            renderMyOrders(orders);
+        } catch (err) {
+            console.error(err);
+            alert("Error fetching orders");
+        }
+    }
+
+    function renderMyOrders(orders) {
+        const tbody = document.querySelector("#myOrdersTable tbody");
+        tbody.innerHTML = "";
+
+        orders.forEach(order => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${order.id}</td>
+                <td>${new Date(order.orderDate).toLocaleString()}</td>
+                <td>${(order.totalAmount ?? 0).toFixed(2)}</td>
+                <td>${order.status}</td>
+                <td>
+                    <table border="0" cellpadding="2">
+                        <thead>
+                            <tr>
+                                <th>Product Id</th>
+                                <th>Name</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.items.map(item => `
+                                <tr>
+                                    <td>${item.productId}</td>
+                                    <td>${item.productName}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.unitPrice.toFixed(2)}</td>
+                                    <td>${item.totalPrice.toFixed(2)}</td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Fetch user orders on page load
+    fetchMyOrders();
+</script>
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 6px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
