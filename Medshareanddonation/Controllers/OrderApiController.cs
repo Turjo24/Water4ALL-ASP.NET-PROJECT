@@ -143,6 +143,50 @@ namespace Medshareanddonation.Controllers
         }
 
         // ------------------------
+        // Admin: Get Single Order by ID
+        // ------------------------
+        [HttpGet("GetOrderById/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetOrderByIdForAdmin(int id)
+        {
+            var order = await _context.Orders
+                .Where(o => o.Id == id)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .AsNoTracking()
+                .Select(o => new
+                {
+                    o.Id,
+                    o.UserId,
+                    o.OrderDate,
+                    o.TotalAmount,
+                    o.Status,
+                    o.ShippingName,
+                    o.ShippingPhone,
+                    o.ShippingAddress,
+                    o.City,
+                    o.PostalCode,
+                    o.PaymentMethod,
+                    o.PaymentStatus,
+                    o.Notes,
+                    Items = o.OrderItems.Select(oi => new
+                    {
+                        oi.ProductId,
+                        oi.Quantity,
+                        oi.UnitPrice,
+                        oi.TotalPrice,
+                        ProductName = oi.Product.Name
+                    })
+                })
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+                return NotFound();
+
+            return Ok(order);
+        }
+
+        // ------------------------
         // Admin: Change Order Status
         // ------------------------
         [HttpPut("ChangeStatus/{id}")]

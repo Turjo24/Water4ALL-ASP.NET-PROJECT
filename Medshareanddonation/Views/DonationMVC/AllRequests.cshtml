@@ -78,8 +78,8 @@
         <div class="col-span-1 text-center">Liters</div>
         <div class="col-span-2 text-center">Reason</div>
         <div class="col-span-1 text-center">Status</div>
-        <div class="col-span-1 text-center">Volunteer</div>
-        <div class="col-span-2 text-center">Actions</div>
+        <div class="col-span-2 text-center">Volunteer</div>
+        <div class="col-span-1 text-center">Actions</div>
     </div>
 
     <!-- Data rows -->
@@ -172,7 +172,7 @@
                   </svg>
                   <span class="-translate-x-2">${req.status}</span>
                 </div>
-                <div class="col-span-1 text-center">
+                <div class="col-span-2 text-center">
                   <div class="dropdown">
                     <button class="bg-blue-100 border border-blue-300 text-blue-700 px-2 py-1 rounded text-xs hover:bg-blue-200 w-full min-h-[40px] flex items-center justify-center">
                       <div class="text-center">
@@ -189,8 +189,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-span-2 flex flex-col items-center gap-1">
-                  <div class="flex gap-1 w-full">
+                <div class="col-span-1 flex flex-col items-center gap-1">
+                  <div class="flex flex-col gap-1 w-full">
                     <button onclick="changeStatus(${req.id}, 'Approved')" class="text-green-600 border-2 border-green-500 bg-green-100 p-1 rounded text-xs flex-1 hover:bg-green-200">Approve</button>
                     <button onclick="changeStatus(${req.id}, 'Rejected')" class="text-red-600 border-2 border-red-500 bg-red-100 p-1 rounded text-xs flex-1 hover:bg-red-200">Reject</button>
                   </div>
