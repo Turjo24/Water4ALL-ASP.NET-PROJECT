@@ -1,5 +1,6 @@
 ﻿using Medshareanddonation.Components;
 using Medshareanddonation.Data;
+using Medshareanddonation.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,9 +38,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// ✅ JWT Authentication
+//  Register ProfileService
+builder.Services.AddScoped<IProfileService, ProfileService>();
+
+//  Authentication: Use Identity cookies for MVC; JWT for APIs
 builder.Services.AddAuthentication(options =>
 {
+    // Default scheme for APIs
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
@@ -60,10 +65,43 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Configure Identity cookie paths and prevent API redirects to HTML login
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Auth/SignIn";
+    options.AccessDeniedPath = "/Auth/SignIn";
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
+
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -82,20 +120,21 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication(); // ✅ must be before UseAuthorization
+app.UseSession();
+app.UseAuthentication(); //  must be before UseAuthorization
 app.UseAuthorization();
 
 app.UseAntiforgery();
 
-// ✅ Map Controllers (disable antiforgery for API)
+//  Map Controllers (disable antiforgery for API)
 app.MapControllers()
    .DisableAntiforgery();
 
-// ✅ Map Blazor components
+//  Map Blazor components
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// ✅ MVC fallback
+//  MVC fallback
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

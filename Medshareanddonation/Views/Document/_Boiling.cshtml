@@ -1,0 +1,117 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediBridge - Water Purification</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- Hide Scrollbar -->
+    <style>
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none;
+            }
+    </style>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <main class="max-w-5xl mx-auto p-6">
+        <h2 class="text-3xl font-bold mb-4 text-center text-blue-500 tracking-tighter">Effective Water Purification through Boiling: Procedures and Tips</h2>
+
+        <!-- Step 1 -->
+        <div class="flex items-center mb-20 gap-5">
+            <div>
+                <h3 class="text-xl font-semibold mb-2">Step 1: Pour Water into a Pot</h3>
+                <p class="mb-6">
+                    Start by pouring water into a clean pot. Use the cleanest water source available, such as tap water, clear stream water, or pre-filtered water. Make sure the pot is free from dirt or other contaminants.
+                </p>
+            </div>
+            <div>
+                <img src="~/Images/boil/Boil4.png" alt="Boiling Water picture" class=" w-full h-auto object-fit-cover"/>
+            </div>
+            
+        </div>
+
+
+        <!-- Step 2 -->
+        <div class="flex items-center gap-5 text-justify mb-20">
+            <div>
+                <img src="~/Images/boil/Boil2.png" alt="Boiling Water picture" class=" w-full h-auto object-fit-cover" />
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-2">Step 2: Place the Pot on a Heat Source</h3>
+                <p class="mb-2">
+                    Put the pot on a reliable heat source such as a gas stove, electric burner, or campfire. Turn on the heat and allow the water to warm up gradually.
+                </p>
+                <p class="mb-2">
+                    Wait until the water reaches a rolling boil. This means large bubbles are rising continuously and bursting at the surface. A rolling boil indicates that the water has reached 100°C (212°F), which is hot enough to kill most harmful microorganisms.
+                </p>
+                <p class="mb-2">
+                    Keep the water boiling for:
+                </p>
+                <ul class="list-disc list-inside mb-6">
+                    <li>At least <strong>1 minute</strong> at lower elevations (below 2,000 meters or ~6,500 feet).</li>
+                    <li>At least <strong>3 minutes</strong> at higher elevations (above 2,000 meters).</li>
+                </ul>
+                <p ">
+                    This ensures that pathogens such as <em>E. coli</em>, <em>Giardia</em>, and viruses are effectively destroyed.
+                </p>
+            </div>
+        </div>
+        
+
+        <!-- Step 3 -->
+        <div class="flex items-center mb-20 gap-5">
+            <div>
+                <h3 class="text-xl font-semibold mb-2">Step 5: Remove and Let It Cool</h3>
+                <p class="mb-6">
+                    After the required boiling time, carefully remove the pot from the heat source. Let the water cool naturally. Avoid covering the pot tightly while it’s hot—allow steam to escape to prevent pressure buildup.
+                </p>
+                <p class="mb-6">
+                    Once cooled, transfer the water into a clean, sanitized container with a tight-fitting lid. Avoid touching the inside of the container or lid to prevent contamination. Store in a cool, dry place.
+                </p>
+            </div>
+            <div>
+                <img src="~/Images/boil/Boil1.png" alt="Boiling Water picture" class=" w-full h-auto object-fit-cover" />
+            </div>
+
+        </div>
+
+        <!-- Additional Tips -->
+        <h3 class="text-xl font-semibold mb-2">Additional Tips</h3>
+        <ul class="list-disc list-inside mb-6">
+            <li>If the water is cloudy, filter it through a clean cloth or coffee filter before boiling.</li>
+            <li>Use containers that have been properly cleaned and disinfected.</li>
+            <li>Boiled water should be used within 24–48 hours or stored in a refrigerator.</li>
+        </ul>
+
+        <!-- Why Boiling Works -->
+        <h3 class="text-xl font-semibold mb-2">Why Boiling Works</h3>
+        <p class="mb-6">
+            Boiling destroys harmful microorganisms by using heat to break down their cellular structure. It’s a chemical-free, effective method that is ideal when clean drinking water is not readily available.
+        </p>
+    </main>
+</body>
+</html>

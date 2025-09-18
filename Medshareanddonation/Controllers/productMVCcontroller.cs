@@ -15,12 +15,16 @@ namespace Medshareanddonation.Controllers
             return View();
         }
 
-
-        public IActionResult Details()
+        [Route("ProductMVC/Details/{id:int}")]
+        public IActionResult Details(int id)
         {
-            return View();
+            // Create a ViewModel or use ViewBag to pass the product ID
+            ViewBag.ProductId = id;
+
+            // You can also create a model if needed
+            var model = new { ProductId = id };
+
+            return View(model);
         }
-
-
     }
 }

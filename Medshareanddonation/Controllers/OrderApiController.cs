@@ -4,135 +4,200 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Medshareanddonation.Models.DTOs;
 
 namespace Medshareanddonation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OrdersApiController : ControllerBase
     {
-        private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext _context;
 
-        public OrdersApiController(ApplicationDbContext db)
+        public OrdersApiController(ApplicationDbContext context)
         {
-            _db = db;
+            _context = context;
         }
 
-        // GET: api/OrdersApi
-        [Authorize]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        
+        [Authorize(Roles = "User")]
+        [HttpPost("Create")]
+        public async Task<ActionResult<Order>> Create([FromBody] Order model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+
+            model.UserId = userId;
+            model.OrderDate = DateTime.Now;
+            model.Status = "Pending";
+
+            _context.Orders.Add(model);
+            await _context.SaveChangesAsync();
+
+            return Ok(model);
+        }
+
+        
+        [HttpGet("MyOrders")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> MyOrders()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
 
-            var orders = await _db.Orders
+            var orders = await _context.Orders
                 .Where(o => o.UserId == userId)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
                 .AsNoTracking()
+                .Select(o => new
+                {
+                    o.Id,
+                    o.OrderDate,
+                    o.TotalAmount,
+                    o.Status,
+                    Items = o.OrderItems.Select(oi => new
+                    {
+                        oi.ProductId,
+                        oi.Quantity,
+                        oi.UnitPrice,
+                        oi.TotalPrice,
+                        ProductName = oi.Product.Name
+                    })
+                })
                 .ToListAsync();
 
             return Ok(orders);
         }
 
-        // GET: api/OrdersApi/5
-        [Authorize]
+
+
+        // ------------------------
+        // Get Order by Id (User)
+        // ------------------------
+        [Authorize(Roles = "User")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public async Task<ActionResult<Order>> GetOrderById(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
 
-            var order = await _db.Orders
+            var order = await _context.Orders
                 .Where(o => o.Id == id && o.UserId == userId)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (order == null)
-                return NotFound();
+            if (order == null) return NotFound();
 
             return Ok(order);
         }
 
-        // POST: api/OrdersApi
-        [Authorize]
-        [HttpPost]
-        public async Task<ActionResult<Order>> CreateOrder([FromBody] CreateOrderViewModel model)
+        // ------------------------
+        // Admin: Get All Orders
+        // ------------------------
+        [HttpGet("AllOrders")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<object>>> AllOrders()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var order = new Order
-            {
-                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                OrderDate = DateTime.Now,
-                TotalAmount = model.TotalAmount,
-                Status = "Pending",
-                ShippingName = model.ShippingName,
-                ShippingPhone = model.ShippingPhone,
-                ShippingAddress = model.ShippingAddress,
-                City = model.City,
-                PostalCode = model.PostalCode,
-                PaymentMethod = model.PaymentMethod,
-                Notes = model.Notes,
-                OrderItems = model.CartItems.Select(ci => new OrderItem
-                {
-                    ProductId = ci.ProductId,
-                    Quantity = ci.Quantity,
-                    UnitPrice = ci.Price,
-                    TotalPrice = ci.TotalPrice
-                }).ToList()
-            };
-
-            _db.Orders.Add(order);
-            await _db.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
-        }
-
-        // PUT: api/OrdersApi/5
-        [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order updatedOrder)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (id != updatedOrder.Id)
-                return BadRequest();
-
-            var order = await _db.Orders
+            var orders = await _context.Orders
                 .Include(o => o.OrderItems)
-                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+                .ThenInclude(oi => oi.Product)
+                .AsNoTracking()
+                .Select(o => new
+                {
+                    o.Id,
+                    o.UserId,
+                    o.OrderDate,
+                    o.TotalAmount,
+                    o.Status,
+                    o.ShippingName,
+                    o.ShippingPhone,
+                    o.ShippingAddress,
+                    o.City,
+                    o.PostalCode,
+                    o.PaymentMethod,
+                    o.PaymentStatus,
+                    o.Notes,
+                    Items = o.OrderItems.Select(oi => new
+                    {
+                        oi.ProductId,
+                        oi.Quantity,
+                        oi.UnitPrice,
+                        oi.TotalPrice,
+                        ProductName = oi.Product.Name
+                    })
+                })
+                .ToListAsync();
 
-            if (order == null)
-                return NotFound();
-
-            order.Status = updatedOrder.Status;
-            order.PaymentStatus = updatedOrder.PaymentStatus;
-
-            await _db.SaveChangesAsync();
-            return NoContent();
+            return Ok(orders);
         }
 
-        // DELETE: api/OrdersApi/5
-        [Authorize]
+        // ------------------------
+        // Admin: Change Order Status
+        // ------------------------
+        [HttpPut("ChangeStatus/{id}")]
+        public async Task<IActionResult> ChangeStatus(int id, [FromQuery] string status)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return NotFound(new { message = "Order not found" });
+
+            // Optional: validate allowed statuses
+            var validStatuses = new[] { "Pending", "Confirmed", "Shipped", "Delivered", "Cancelled" };
+            if (!validStatuses.Contains(status))
+                return BadRequest(new { message = "Invalid status value" });
+
+            order.Status = status;
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Status updated successfully" });
+        }
+        // ------------------------
+        // Admin: Delete Order
+        // ------------------------
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var order = await _db.Orders
+            var order = await _context.Orders
                 .Include(o => o.OrderItems)
-                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
-                return NotFound();
+                return NotFound(new { message = "Order not found" });
 
-            _db.Orders.Remove(order);
-            await _db.SaveChangesAsync();
-            return NoContent();
+            // Remove related order items first (if cascade delete is not set in DB)
+            _context.OrderItems.RemoveRange(order.OrderItems);
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Order deleted successfully" });
+        }
+
+        // ------------------------
+        // Test User (Debug)
+        // ------------------------
+        [HttpGet("TestUser")]
+        [Authorize]
+        public IActionResult TestUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized("UserId not found");
+
+            return Ok(new { UserId = userId });
         }
     }
 }
