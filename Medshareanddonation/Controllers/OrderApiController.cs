@@ -21,9 +21,7 @@ namespace Medshareanddonation.Controllers
             _context = context;
         }
 
-        // ------------------------
-        // Create Order (User)
-        // ------------------------
+        
         [Authorize(Roles = "User")]
         [HttpPost("Create")]
         public async Task<ActionResult<Order>> Create([FromBody] Order model)
@@ -45,9 +43,7 @@ namespace Medshareanddonation.Controllers
             return Ok(model);
         }
 
-        // ------------------------
-        // Get User Orders
-        // ------------------------
+        
         [HttpGet("MyOrders")]
         [Authorize(Roles = "User")]
         public async Task<IActionResult> MyOrders()
@@ -150,16 +146,44 @@ namespace Medshareanddonation.Controllers
         // Admin: Change Order Status
         // ------------------------
         [HttpPut("ChangeStatus/{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangeStatus(int id, [FromQuery] string status)
         {
             var order = await _context.Orders.FindAsync(id);
-            if (order == null) return NotFound();
+            if (order == null)
+                return NotFound(new { message = "Order not found" });
+
+            // Optional: validate allowed statuses
+            var validStatuses = new[] { "Pending", "Confirmed", "Shipped", "Delivered", "Cancelled" };
+            if (!validStatuses.Contains(status))
+                return BadRequest(new { message = "Invalid status value" });
 
             order.Status = status;
+            _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new { message = "Status updated successfully" });
+        }
+        // ------------------------
+        // Admin: Delete Order
+        // ------------------------
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+                return NotFound(new { message = "Order not found" });
+
+            // Remove related order items first (if cascade delete is not set in DB)
+            _context.OrderItems.RemoveRange(order.OrderItems);
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Order deleted successfully" });
         }
 
         // ------------------------

@@ -15,88 +15,162 @@
             <th>Shipping Info</th>
             <th>Payment Method</th>
             <th>Items</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody></tbody>
 </table>
 
-<script>
-    async function fetchOrders() {
-        try {
-            // JWT token stored in localStorage
-            const token = localStorage.getItem("token");
-            if (!token) {
-                alert("No admin token found");
-                return;
-            }
-
-            const response = await fetch("/api/OrdersApi/AllOrders", {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
+@section Scripts {
+    <script>
+        async function fetchOrders() {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    alert("No admin token found");
+                    return;
                 }
-            });
 
-            if (!response.ok) {
-                alert("Failed to fetch orders");
+                const response = await fetch("/api/OrdersApi/AllOrders", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    alert("Failed to fetch orders");
+                    return;
+                }
+
+                const orders = await response.json();
+                renderOrders(orders);
+            } catch (err) {
+                console.error(err);
+                alert("Error fetching orders");
+            }
+        }
+
+        function renderOrders(orders) {
+            const tbody = document.querySelector("#ordersTable tbody");
+            tbody.innerHTML = "";
+
+            orders.forEach(order => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.userId}</td>
+                    <td>${new Date(order.orderDate).toLocaleString()}</td>
+                    <td>${order.totalAmount.toFixed(2)}</td>
+                    <td>
+                        <select onchange="updateStatus(${order.id}, this.value)">
+                            <option value="Pending" ${order.status === "Pending" ? "selected" : ""}>Pending</option>
+                            <option value="Confirmed" ${order.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+                            <option value="Shipped" ${order.status === "Shipped" ? "selected" : ""}>Shipped</option>
+                            <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                            <option value="Cancelled" ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+                        </select>
+                    </td>
+                    <td>
+                        ${order.shippingName}<br>
+                        ${order.shippingPhone}<br>
+                        ${order.shippingAddress}, ${order.city}, ${order.postalCode}
+                    </td>
+                    <td>${order.paymentMethod}</td>
+                    <td>
+                        <table border="0" cellpadding="2">
+                            <thead>
+                                <tr>
+                                    <th>Product Id</th>
+                                    <th>Name</th>
+                                    <th>Qty</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${order.items.map(item => `
+                                    <tr>
+                                        <td>${item.productId}</td>
+                                        <td>${item.productName}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>${item.unitPrice.toFixed(2)}</td>
+                                        <td>${item.totalPrice.toFixed(2)}</td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <button onclick="deleteOrder(${order.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function updateStatus(orderId, newStatus) {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    alert("No admin token found");
+                    return;
+                }
+
+                const response = await fetch(`/api/OrdersApi/ChangeStatus/${orderId}?status=${newStatus}`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert("Failed: " + (error.message || "Could not update status"));
+                    return;
+                }
+
+                alert("Status updated!");
+            } catch (err) {
+                console.error(err);
+                alert("Error updating status");
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm("Are you sure you want to delete this order?")) {
                 return;
             }
 
-            const orders = await response.json();
-            renderOrders(orders);
-        } catch (err) {
-            console.error(err);
-            alert("Error fetching orders");
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    alert("No admin token found");
+                    return;
+                }
+
+                const response = await fetch(`/api/OrdersApi/${orderId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert("Failed: " + (error.message || "Could not delete order"));
+                    return;
+                }
+
+                alert("Order deleted!");
+                fetchOrders(); // refresh table
+            } catch (err) {
+                console.error(err);
+                alert("Error deleting order");
+            }
         }
-    }
 
-    function renderOrders(orders) {
-        const tbody = document.querySelector("#ordersTable tbody");
-        tbody.innerHTML = "";
-
-        orders.forEach(order => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${order.id}</td>
-                <td>${order.userId}</td>
-                <td>${new Date(order.orderDate).toLocaleString()}</td>
-                <td>${order.totalAmount.toFixed(2)}</td>
-                <td>${order.status}</td>
-                <td>
-                    ${order.shippingName}<br>
-                    ${order.shippingPhone}<br>
-                    ${order.shippingAddress}, ${order.city}, ${order.postalCode}
-                </td>
-                <td>${order.paymentMethod}</td>
-                <td>
-                    <table border="0" cellpadding="2">
-                        <thead>
-                            <tr>
-                                <th>Product Id</th>
-                                <th>Name</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Total Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${order.items.map(item => `
-                                <tr>
-                                    <td>${item.productId}</td>
-                                    <td>${item.productName}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.unitPrice.toFixed(2)}</td>
-                                    <td>${item.totalPrice.toFixed(2)}</td>
-                                </tr>
-                            `).join("")}
-                        </tbody>
-                    </table>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    // Fetch orders on page load
-    fetchOrders();
-</script>
+        // Fetch orders on page load
+        fetchOrders();
+    </script>
+}
