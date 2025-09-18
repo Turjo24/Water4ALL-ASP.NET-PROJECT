@@ -44,8 +44,9 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 //  Authentication: Use Identity cookies for MVC; JWT for APIs
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+    // Default scheme for APIs
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
