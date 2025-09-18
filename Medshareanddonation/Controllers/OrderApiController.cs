@@ -163,6 +163,28 @@ namespace Medshareanddonation.Controllers
 
             return Ok(new { message = "Status updated successfully" });
         }
+        // ------------------------
+        // Admin: Delete Order
+        // ------------------------
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+                return NotFound(new { message = "Order not found" });
+
+            // Remove related order items first (if cascade delete is not set in DB)
+            _context.OrderItems.RemoveRange(order.OrderItems);
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Order deleted successfully" });
+        }
 
         // ------------------------
         // Test User (Debug)
