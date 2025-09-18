@@ -1,0 +1,197 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Order Details";
+    var orderId = ViewData["OrderId"];
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .table-hover tr:hover {
+            background-color: #f8fafc;
+            transition: background-color 0.2s ease;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen">
+
+    <nav class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="/All" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        <span class="font-medium">Back to Products</span>
+                    </a>
+                    <span class="text-gray-300">|</span>
+                    <span class="text-gray-600 font-medium">Order Details</span>
+                </div>
+                <a href="/CartMVC" class="flex items-center text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    <span>View Cart</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-8">Order Details</h1>
+
+        <div id="loading" class="flex items-center justify-center text-gray-600 mb-6">
+            <i class="fas fa-spinner fa-spin mr-2"></i>Loading order details...
+        </div>
+        <div id="error" class="hidden text-red-600 bg-red-50 p-4 rounded-lg mb-6"></div>
+
+        <div id="orderDetails" class="hidden bg-white shadow-lg rounded-xl p-8 space-y-8 fade-in">
+            <!-- Order details will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const orderId = '@orderId';
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                document.getElementById("loading").classList.add("hidden");
+                const errorEl = document.getElementById("error");
+                errorEl.textContent = "Authentication required. Please log in.";
+                errorEl.classList.remove("hidden");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/OrdersApi/GetOrderById/${orderId}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!res.ok) throw new Error("Failed to fetch order details.");
+
+                const order = await res.json();
+                document.getElementById("loading").classList.add("hidden");
+                const detailsEl = document.getElementById("orderDetails");
+                detailsEl.classList.remove("hidden");
+
+                const statusClass = {
+                    'Pending': 'status-pending',
+                    'Completed': 'status-completed',
+                    'Cancelled': 'status-cancelled'
+                }[order.status] || '';
+
+                detailsEl.innerHTML = `
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Order #${order.id}</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <p><strong>User ID:</strong> ${order.userId}</p>
+                            <p><strong>Date:</strong> ${new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                            <p><strong>Status:</strong> <span class="status-badge ${statusClass}">${order.status}</span></p>
+                            <p><strong>Total:</strong> ৳${order.totalAmount.toFixed(2)}</p>
+                            <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+                            <p><strong>Payment Status:</strong> ${order.paymentStatus ?? "N/A"}</p>
+                            <p><strong>Notes:</strong> ${order.notes ?? "None"}</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-6 border-gray-200">
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Shipping Information</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <p><strong>Name:</strong> ${order.shippingName}</p>
+                            <p><strong>Phone:</strong> ${order.shippingPhone}</p>
+                            <p class="sm:col-span-2"><strong>Address:</strong> ${order.shippingAddress}, ${order.city}, ${order.postalCode}</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-6 border-gray-200">
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Order Items</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm border border-gray-200 rounded-lg table-hover">
+                                <thead class="bg-gray-50 text-gray-700">
+                                    <tr>
+                                        <th class="border px-4 py-3 text-left font-semibold">Product</th>
+                                        <th class="border px-4 py-3 text-center font-semibold">Quantity</th>
+                                        <th class="border px-4 py-3 text-center font-semibold">Unit Price</th>
+                                        <th class="border px-4 py-3 text-center font-semibold">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white">
+                                    ${order.items.map(item => `
+                                        <tr class="border-t border-gray-200">
+                                            <td class="px-4 py-3">${item.productName} <span class="text-gray-500 text-xs">(ID: ${item.productId})</span></td>
+                                            <td class="text-center px-4 py-3">${item.quantity}</td>
+                                            <td class="text-center px-4 py-3">৳${item.unitPrice.toFixed(2)}</td>
+                                            <td class="text-center px-4 py-3">৳${item.totalPrice.toFixed(2)}</td>
+                                        </tr>
+                                    `).join("")}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById("loading").classList.add("hidden");
+                const errorEl = document.getElementById("error");
+                errorEl.textContent = err.message || "An error occurred while fetching order details.";
+                errorEl.classList.remove("hidden");
+            }
+        });
+    </script>
+</body>
+</html>

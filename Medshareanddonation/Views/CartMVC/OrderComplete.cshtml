@@ -49,19 +49,28 @@
                     {
                         <li class="py-2 flex justify-between">
                             <span>@item.Product?.Name ?? "Product"</span>
-                            <span>@item.Quantity x ৳@item.UnitPrice.ToString("0.00") = ৳@item.TotalPrice.ToString("0.00")</span>
+                            <span>@item.Quantity x @item.UnitPrice.ToString("0.00")<span class="text-md font-bold ">Tk</span> = @item.TotalPrice.ToString("0.00")<span class="text-md font-bold ">Tk</span></span>
                         </li>
                     }
                 </ul>
                 <div class="flex justify-between font-bold text-gray-900 mt-4 text-lg">
                     <span>Total:</span>
-                    <span>৳@Model.TotalAmount.ToString("0.00")</span>
+                    <span>@Model.TotalAmount.ToString("0.00")<span class="text-md font-bold ">Tk</span></span>
                 </div>
             </div>
+            <div class="flex mx-auto items-center justify-center gap-5">
+                <!-- Back to Products Button -->
+                <a href="/all" class="inline-block mt-6 bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Products
+                </a>
 
-            <a href="/All" class="inline-block mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Products
-            </a>
+                <!-- Make Payment Button -->
+                <a href="/Payment" class="inline-block mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-credit-card mr-2"></i>Make Payment
+                </a>
+            </div>
+
+            
         </div>
     </div>
 

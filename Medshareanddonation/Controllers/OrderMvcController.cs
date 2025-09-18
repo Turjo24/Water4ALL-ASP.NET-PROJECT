@@ -31,6 +31,14 @@ namespace Medshareanddonation.Controllers
         {
             return View("~/Views/OrderMvc/MyOrder.cshtml");
         }
+        // GET: /OrderMvc/OrderDetails/5
+        [HttpGet("OrderDetails/{id}")]
+        public IActionResult OrderDetails(int id)
+        {
+            ViewData["OrderId"] = id;
+            return View("~/Views/OrderMvc/OrderDetails.cshtml");
+        }
+
 
 
     }
