@@ -1,4 +1,5 @@
 ﻿using Medshareanddonation.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -17,12 +18,14 @@ namespace Medshareanddonation.Controllers
             _profileService = profileService;
         }
 
+        // Existing User Profile page
         [HttpGet("UserProfile")]
         public IActionResult UserProfile()
         {
             return View();
         }
 
+        // Existing API to get user profile JSON data
         [HttpGet("GetProfile")]
         public async Task<IActionResult> GetProfile()
         {
@@ -54,6 +57,7 @@ namespace Medshareanddonation.Controllers
             });
         }
 
+        // Existing API to update profile
         [HttpPost("UpdateProfile")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
         {
@@ -87,6 +91,14 @@ namespace Medshareanddonation.Controllers
                 role = updatedProfile.Role,
                 updatedAt = currentDateTime
             });
+        }
+
+        // URL: /Profile/AllUsers
+        [HttpGet("AllUsers")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult AllUsers()
+        {
+            return View();
         }
     }
 
