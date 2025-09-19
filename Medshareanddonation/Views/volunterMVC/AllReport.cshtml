@@ -1,30 +1,45 @@
-﻿<div class="min-h-screen bg-gray-100 p-6">
-    <div class="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <!-- Top Heading -->
-        <h1 class="text-4xl font-extrabold mb-4 text-center text-blue-600">
-            Join Our Program!
-        </h1>
-        <p class="text-center text-gray-700 mb-6 text-lg">
-            This is the donation report. You can help support people in need by reviewing these requests.
-        </p>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen p-8 mb-auto mt-20">
+
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-2xl p-8 border border-gray-200 mb-auto mt-20" >
+
+        <!-- Heading Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-extrabold text-blue-700 mb-3 tracking-tight">
+                Donation Report
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Help us to support people in need.For clarity here are donation request. 
+                You can also export the report for records.
+            </p>
+        </div>
 
         <!-- Export Button -->
-        <div class="flex justify-end mb-4">
-            <button id="exportExcel" class="px-5 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition duration-200">
-                Export to Excel
+        <div class="flex justify-end mb-6">
+            <button id="exportExcel"
+                    class="px-6 py-2.5 bg-green-500 text-white font-semibold rounded-full shadow-md
+              hover:bg-green-600 hover:scale-105 transform transition duration-200">
+                📊 Export to Excel
             </button>
         </div>
 
         <!-- Table -->
-        <div class="overflow-x-auto border border-gray-300 rounded-lg shadow-sm">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-blue-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Phone Number</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Location</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Water Liters</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Reason</th>
+        <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-sm">
+            <table class="min-w-full border-collapse">
+                <thead>
+                    <tr class="bg-blue-600 text-white">
+                        <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Phone Number</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Location</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Water Liters</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Reason</th>
                     </tr>
                 </thead>
                 <tbody id="requestsBody" class="bg-white divide-y divide-gray-200">
@@ -35,51 +50,55 @@
             </table>
         </div>
     </div>
-</div>
 
-<script>
-    // Fetch AllRequests API
-    async function fetchRequests() {
-        try {
+    <script>
+        // Fetch AllRequests API
+        async function fetchRequests() {
+          try {
             const res = await fetch('https://localhost:7217/api/Volunteer/AllReport');
             const data = await res.json();
             const tbody = document.getElementById('requestsBody');
             tbody.innerHTML = '';
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-gray-500">No donation requests found.</td></tr>';
-                return;
+              tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-gray-500">No donation requests found.</td></tr>';
+              return;
             }
 
-            data.forEach(r => {
-                const row = document.createElement('tr');
-                row.className = "hover:bg-gray-50 transition duration-150";
-                row.innerHTML = `
-                    <td class="px-6 py-4 text-gray-800">${r.name}</td>
-                    <td class="px-6 py-4 text-gray-800">${r.phoneNumber}</td>
-                    <td class="px-6 py-4 text-gray-800">${r.locationAddress}</td>
-                    <td class="px-6 py-4 text-gray-800">${r.waterLiters}</td>
-                    <td class="px-6 py-4 text-gray-800">${r.reason}</td>
-                `;
-                tbody.appendChild(row);
+            data.forEach((r) => {
+              const row = document.createElement('tr');
+              row.className = `
+                hover:bg-blue-50 transition duration-150
+              `;
+              row.innerHTML = `
+                <td class="px-6 py-4 text-gray-800 font-medium">${r.name}</td>
+                <td class="px-6 py-4 text-gray-700">${r.phoneNumber}</td>
+                <td class="px-6 py-4 text-gray-700">${r.locationAddress}</td>
+                <td class="px-6 py-4 text-gray-700">${r.waterLiters}</td>
+                <td class="px-6 py-4 text-gray-700">${r.reason}</td>
+              `;
+              tbody.appendChild(row);
             });
 
-        } catch (err) {
+          } catch (err) {
             const tbody = document.getElementById('requestsBody');
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-red-500">Error loading data.</td></tr>';
             console.error(err);
+          }
         }
-    }
 
-    fetchRequests();
+        fetchRequests();
 
-    // Export to Excel
-    document.getElementById('exportExcel').addEventListener('click', () => {
-        const table = document.querySelector('table');
-        const wb = XLSX.utils.table_to_book(table);
-        XLSX.writeFile(wb, 'DonationReport.xlsx');
-    });
-</script>
+        // Export to Excel
+        document.getElementById('exportExcel').addEventListener('click', () => {
+          const table = document.querySelector('table');
+          const wb = XLSX.utils.table_to_book(table);
+          XLSX.writeFile(wb, 'DonationReport.xlsx');
+        });
+    </script>
 
-<!-- Include XLSX library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Include XLSX library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+</body>
+</html>

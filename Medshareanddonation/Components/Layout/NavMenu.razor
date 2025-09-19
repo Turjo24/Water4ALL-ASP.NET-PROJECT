@@ -29,12 +29,16 @@
         <div class="px-4 sm:px-10">
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center space-x-6">
-                    <a href="/" class="text-xl font-semibold transition-colors hover:text-gray-600">MyApp</a>
+                    <a href="/" class="flex items-center space-x-2">
+                        <img src="/images/logo.png" alt="Water4All Logo" class="h-16 w-auto">
+                    </a>
+
                     <div class="hidden md:flex space-x-4">
                         <a href="/" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Home</a>
                         <a href="/about" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">About</a>
                         <a href="/contact" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Contact</a>
                         <a href="/Document/Index" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Document</a>
+                        <a href="https://localhost:7217/volunterMVC/AllReport" class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-gray-500">Report</a>
                     </div>
                 </div>
                 <div id="navRightActions" class="relative"></div>
@@ -124,6 +128,7 @@
             } else if (role === 'Volunteer') {
                 roleOptionsHTML = `
                     <a href="https://localhost:7217/OrderMvc/Myorders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">My Order History</a>
+                    <a href="https://localhost:7217/volunterMVC/AssignedDonations" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">My Assiged Collection</a>
                 `;
                 cartHTML = `
                     <a href="/CartMVC" class="relative text-blue-600 hover:text-blue-700 font-semibold">

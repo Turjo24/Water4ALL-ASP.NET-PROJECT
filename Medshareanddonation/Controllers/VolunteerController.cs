@@ -56,7 +56,7 @@ public class VolunteerController : ControllerBase
     // NEW: Get all donation requests assigned to a volunteer
 
     [HttpGet("{volunteerId}/AssignedDonations")]
-    [Authorize] // চাইলে Roles ও দিতে পারেন [Authorize(Roles = "Admin,Volunteer")]
+    [Authorize] 
     public async Task<ActionResult<IEnumerable<object>>> GetAssignedDonations(string volunteerId)
     {
         try
@@ -100,11 +100,12 @@ public class VolunteerController : ControllerBase
 
     // GET: api/Volunteer/AllReport
     [HttpGet("AllReport")]
-    [AllowAnonymous]  // সবাই access করতে পারবে
+    [AllowAnonymous]  
     public async Task<ActionResult<IEnumerable<object>>> AllRequests()
     {
         var requests = await _dbContext.DonationRequests
             .AsNoTracking()  // readonly
+            .Where(d => d.Status == "Approved")
             .Select(d => new
             {
                 d.Id,
