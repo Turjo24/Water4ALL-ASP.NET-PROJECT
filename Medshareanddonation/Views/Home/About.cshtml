@@ -1,22 +1,50 @@
 ﻿@{
-    ViewData["Title"] = "About";
+    ViewData["Title"] = "About Us";
 }
 
-<div class="flex justify-center items-center min-h-screen bg-gray-100">
-    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl">
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">About MedShare</h2>
+<div class="relative min-h-screen bg-gray-900">
+    <!-- Header Section with Gradient Background -->
+    <div class="relative z-10">
+        <div class="bg-gradient-to-r from-blue-800 to-teal-600 py-20 px-6 text-center shadow-lg">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-white leading-snug drop-shadow-md max-w-4xl mx-auto">
+                At <span class="text-teal-200">Water4All</span>, we believe access to clean and safe water is not a privilege,
+                but a fundamental human right. Millions of people around the world struggle every day with limited
+                or unsafe water supplies, and our mission is to change that reality.
+            </h2>
+        </div>
+    </div>
 
-        <p class="text-gray-700 text-lg mb-4">
-            MedShare is a platform that connects donors and recipients for medical supplies and donations.
-            Our mission is to provide an easy and reliable way for people to contribute to health-related causes.
-        </p>
+    <!-- Content Section with Blurred Background Image -->
+    <div class="relative z-10 flex items-center justify-center px-6 py-12">
+        <div class="relative w-full max-w-5xl rounded-2xl overflow-hidden shadow-xl">
+            <!-- Background Image -->
+            <div class="absolute inset-0 -z-10">
+                <img src="https://www.unicef.org/namibia/sites/unicef.org.namibia/files/styles/hero_extended/public/UNICEFNamibia%202018_Water%20Trucking_USAID_Health_t%20Mutseyekwa%20%28203%29.JPG.webp?itok=VsyGYL4w"
+                     alt="People collecting water in a water-deprived area"
+                     class="w-full h-full object-cover filter blur-sm">
+                <!-- Optional overlay for readability -->
+                <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+            </div>
 
-        <p class="text-gray-700 text-lg mb-4">
-            Whether you are a donor or a recipient, MedShare ensures transparency and efficient tracking of all requests.
-        </p>
+            <!-- Text Content -->
+            <div class="relative p-10 bg-black bg-opacity-50 text-white">
+                <p class="text-lg mb-6">
+                    Through our platform, communities can raise water-related concerns in their area.
+                    Our team carefully reviews these requests and works with trusted partners to deliver
+                    solutions—ranging from emergency water supply to sustainable purification systems.
+                </p>
 
-        <p class="text-gray-700 text-lg">
-            Thank you for being part of our community and helping make healthcare accessible to everyone.
-        </p>
+                <p class="text-lg mb-6">
+                    We manage resources strategically, ensuring that water supplies and purification kits
+                    reach the places where they are needed most. Every contribution is used responsibly,
+                    with detailed reporting so donors and communities can see the impact of their support.
+                </p>
+
+                <p class="text-lg">
+                    Transparency and trust are at the heart of Water4All. Together with our community,
+                    we are building a future where safe water is accessible to everyone, everywhere.
+                </p>
+            </div>
+        </div>
     </div>
 </div>
