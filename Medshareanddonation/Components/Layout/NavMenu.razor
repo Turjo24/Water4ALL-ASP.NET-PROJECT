@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
+        // Tailwind theme config
         tailwind.config = {
             theme: {
                 extend: {
@@ -17,6 +18,8 @@
                 },
             },
         };
+
+        // API endpoint for fetching cart
         const GET_CART_URL = 'https://localhost:7217/CartMVC/GetCart';
     </script>
 </head>
@@ -44,12 +47,11 @@
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('userRole');
 
-        // Track cart count
         let cartCount = parseInt(localStorage.getItem('cartCount')) || 0;
 
         // Update cart count in navbar
         function updateCartCount(items = null) {
-            if (!token || role !== 'User') return;
+            if (!token || (role !== 'User' && role !== 'Volunteer')) return;
 
             if (items) {
                 cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -61,9 +63,9 @@
             localStorage.setItem('cartCount', cartCount);
         }
 
-        // Fetch latest cart count from server
+        // Fetch cart from server
         function fetchCartCount() {
-            if (!token || role !== 'User') return;
+            if (!token || (role !== 'User' && role !== 'Volunteer')) return;
 
             fetch(GET_CART_URL, { headers: { 'Authorization': `Bearer ${token}` } })
                 .then(res => res.json())
@@ -71,9 +73,9 @@
                 .catch(() => {});
         }
 
-        // Add item to cart dynamically
+        // Add item to cart
         async function addToCart(productId) {
-            if (!token || role !== 'User') {
+            if (!token || (role !== 'User' && role !== 'Volunteer')) {
                 alert('Please log in to add items to cart.');
                 return;
             }
@@ -86,8 +88,8 @@
                 });
 
                 if (res.ok) {
-                    fetchCartCount(); // update count from server
-                    localStorage.setItem('cartUpdated', Date.now()); // sync other tabs
+                    fetchCartCount();
+                    localStorage.setItem('cartUpdated', Date.now());
                 } else {
                     const err = await res.json().catch(() => ({ message: 'Failed to add item' }));
                     alert(err.message || 'Failed to add item');
@@ -98,7 +100,7 @@
             }
         }
 
-        // Render navbar right side
+        // Render right side of navbar
         function renderNavRight() {
             if (!token) {
                 navRight.innerHTML = `
@@ -118,9 +120,18 @@
                     <a href="https://localhost:7217/ProductMVC/create" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Create Product</a>
                     <a href="https://localhost:7217/OrderMvc/AdminOrders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">All Order List</a>
                     <a href="https://localhost:7217/Profile/allusers" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">All Users Details</a>
-
                 `;
-            } else {
+            } else if (role === 'Volunteer') {
+                roleOptionsHTML = `
+                    <a href="https://localhost:7217/OrderMvc/Myorders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">My Order History</a>
+                `;
+                cartHTML = `
+                    <a href="/CartMVC" class="relative text-blue-600 hover:text-blue-700 font-semibold">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">${cartCount}</span>
+                    </a>
+                `;
+            } else { // Regular User
                 roleOptionsHTML = `
                     <a href="https://localhost:7217/DonationMVC/create" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Donation Request</a>
                     <a href="https://localhost:7217/DonationMVC/MyRequests" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Donation Requested History</a>
@@ -169,18 +180,18 @@
                     window.location.href = '/Profile/UserProfile';
                 });
 
-                if (role === 'User') fetchCartCount();
+                if (role === 'User' || role === 'Volunteer') fetchCartCount();
             }, 0);
         }
 
         // Listen for cart updates from other tabs
         window.addEventListener('storage', (event) => {
-            if (event.key === 'cartUpdated' && role === 'User') {
+            if (event.key === 'cartUpdated' && (role === 'User' || role === 'Volunteer')) {
                 fetchCartCount();
             }
         });
 
-        // Initialize
+        // Initialize navbar
         renderNavRight();
     </script>
 
