@@ -2,25 +2,61 @@
     ViewData["Title"] = "Contact";
 }
 
-<div class="flex justify-center items-center min-h-screen bg-gray-100">
-    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl">
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Contact Us</h2>
+<div class="relative min-h-screen">
+    <!-- Background Image -->
+    <div class="absolute inset-0 -z-10">
+        <img src="https://images.theconversation.com/files/380876/original/file-20210127-23-zyvmij.jpg?ixlib=rb-4.1.0&rect=457%2C46%2C4314%2C3391&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip"
+             alt="Contact Background"
+             class="w-full h-full object-cover filter brightness-60 blur-sm">
+        <div class="absolute inset-0 bg-black bg-opacity-40"></div> <!-- Overlay for readability -->
+    </div>
 
-        <p class="text-gray-700 text-lg mb-4">
-            Have questions or need support? Reach out to us using the information below:
-        </p>
+    <!-- Contact Card -->
+    <div class="flex justify-center items-start min-h-screen px-4 py-16">
+        <div class="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-4xl border-4 border-blue-500">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-8">Contact Us</h2>
+            <p class="text-gray-700 text-lg text-center mb-10">
+                Have questions or need support? Reach out to us using the form below:
+            </p>
 
-        <div class="space-y-3 text-gray-700">
-            <p>📧 Email: <a href="mailto:support@medshare.com" class="text-blue-500 hover:underline">support@medshare.com</a></p>
-            <p>📞 Phone: +880 1234 567 890</p>
-            <p>🏢 Address: 123 MedShare Street, Dhaka, Bangladesh</p>
+            <!-- Contact Form -->
+            <form class="space-y-4 mb-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" placeholder="Your Name" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+                    <input type="email" placeholder="Your Email" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+                </div>
+                <textarea placeholder="Message" class="w-full border border-gray-300 rounded px-4 py-2 h-36 focus:ring-2 focus:ring-blue-400 outline-none"></textarea>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">Send Message</button>
+            </form>
+
+            <!-- Contact Info in a Row with Bigger Cards -->
+            <div class="flex flex-wrap justify-around items-center gap-6 mt-6">
+                <!-- Email Card -->
+                <a href="mailto:support@medshare.com"
+                   class="flex flex-col items-center backdrop-blur-sm rounded-xl shadow-lg p-8 w-60 hover:shadow-2xl hover:-translate-y-1 transform transition duration-300 bg-white/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12h2a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4 0H6a2 2 0 00-2 2v4a2 2 0 002 2h6m4 0v6m0 0h-4m4 0h4" />
+                    </svg>
+                    <p class="text-center font-medium text-gray-800">📧 support@medshare.com</p>
+                </a>
+
+                <!-- Phone Card -->
+                <a href="tel:+8801234567890"
+                   class="flex flex-col items-center backdrop-blur-sm rounded-xl shadow-lg p-8 w-60 hover:shadow-2xl hover:-translate-y-1 transform transition duration-300 bg-white/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-3 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l1.664 5.25a2 2 0 001.932 1.5h12.808a2 2 0 001.932-1.5L21 10M5 7h14M12 3v4m0 0H9m3 0h3" />
+                    </svg>
+                    <p class="text-center font-medium text-gray-800">📞 +880 1234 567 890</p>
+                </a>
+
+                <!-- Address Card -->
+                <div class="flex flex-col items-center backdrop-blur-sm rounded-xl shadow-lg p-8 w-60 hover:shadow-2xl hover:-translate-y-1 transform transition duration-300 bg-white/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-3 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5V10H2v10h5m10 0v-5a5 5 0 00-10 0v5" />
+                    </svg>
+                    <p class="text-center font-medium text-gray-800">🏢 123 MedShare Street, Dhaka, Bangladesh</p>
+                </div>
+            </div>
         </div>
-
-        <form class="mt-6 space-y-4">
-            <input type="text" placeholder="Your Name" class="w-full border rounded px-3 py-2" />
-            <input type="email" placeholder="Your Email" class="w-full border rounded px-3 py-2" />
-            <textarea placeholder="Message" class="w-full border rounded px-3 py-2 h-32"></textarea>
-            <button type="submit" class="w-full bg-primary text-white py-2 rounded hover:bg-blue-600 transition">Send Message</button>
-        </form>
     </div>
 </div>

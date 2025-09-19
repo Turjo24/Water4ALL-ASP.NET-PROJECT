@@ -21,8 +21,8 @@ namespace Medshareanddonation.Controllers
             _context = context;
         }
 
-        
-        [Authorize(Roles = "User")]
+
+        [Authorize(Roles = "User,Volunteer")]
         [HttpPost("Create")]
         public async Task<ActionResult<Order>> Create([FromBody] Order model)
         {
@@ -45,7 +45,7 @@ namespace Medshareanddonation.Controllers
 
         
         [HttpGet("MyOrders")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Volunteer")]
         public async Task<IActionResult> MyOrders()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -82,7 +82,7 @@ namespace Medshareanddonation.Controllers
         // ------------------------
         // Get Order by Id (User)
         // ------------------------
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Volunteer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrderById(int id)
         {
