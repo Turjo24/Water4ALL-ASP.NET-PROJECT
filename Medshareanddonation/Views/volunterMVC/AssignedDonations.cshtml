@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assigned Donations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Assigned Donations</h2>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-4 py-2 text-left">ID</th>
+                    <th class="px-4 py-2 text-left">Name</th>
+                    <th class="px-4 py-2 text-left">Phone</th>
+                    <th class="px-4 py-2 text-left">Address</th>
+                    <th class="px-4 py-2 text-left">Water (L)</th>
+                    <th class="px-4 py-2 text-left">Reason</th>
+                    <th class="px-4 py-2 text-left">Status</th>
+                    <th class="px-4 py-2 text-left">Created At</th>
+                </tr>
+            </thead>
+            <tbody id="donationsTable" class="divide-y divide-gray-200">
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-gray-500">Loading donations...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const userRole = localStorage.getItem("userRole");
+          if (userRole !== "Volunteer") {
+            alert("You are not authorized to view this page.");
+            return;
+          }
+          fetchAssignedDonations();
+        });
+
+        async function fetchAssignedDonations() {
+          const volunteerId = localStorage.getItem("userId");
+          const token = localStorage.getItem("token");
+          const tbody = document.getElementById("donationsTable");
+
+          if (!volunteerId || !token) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-red-500 font-semibold py-4">User not logged in properly.</td></tr>`;
+            return;
+          }
+
+          try {
+            const res = await fetch(`https://localhost:7217/api/Volunteer/${volunteerId}/AssignedDonations`, {
+              headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+              const errorData = await res.json().catch(() => ({ message: res.statusText }));
+              tbody.innerHTML = `<tr><td colspan="8" class="text-center text-red-500 font-semibold py-4">${errorData.message || 'Failed to load donations'}</td></tr>`;
+              return;
+            }
+
+            const donations = await res.json();
+            tbody.innerHTML = "";
+
+            if (donations.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="8" class="text-center text-gray-500 italic py-4">No donations assigned yet.</td></tr>`;
+              return;
+            }
+
+            donations.forEach(d => {
+              const statusClass = d.status.toLowerCase() === 'complete' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+              const row = document.createElement("tr");
+              row.className = "hover:bg-gray-50";
+              row.innerHTML = `
+                <td class="px-4 py-2">${d.id}</td>
+                <td class="px-4 py-2">${d.name || 'N/A'}</td>
+                <td class="px-4 py-2">${d.phoneNumber || 'N/A'}</td>
+                <td class="px-4 py-2">${d.locationAddress || 'N/A'}</td>
+                <td class="px-4 py-2">${d.waterLiters || 'N/A'}</td>
+                <td class="px-4 py-2">${d.reason || 'N/A'}</td>
+                <td class="px-4 py-2"><span class="px-2 py-1 rounded font-semibold ${statusClass}">${d.status}</span></td>
+                <td class="px-4 py-2">${new Date(d.createdAt).toLocaleString()}</td>
+              `;
+              tbody.appendChild(row);
+            });
+
+          } catch (error) {
+            console.error("Error fetching donations:", error);
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-red-500 font-semibold py-4">Network error: ${error.message}</td></tr>`;
+          }
+        }
+    </script>
+
+</body>
+</html>
