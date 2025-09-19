@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>All Users</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981'
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none;
+            }
+    </style>
+</head>
+<body class="bg-white text-gray-800 font-sans p-8">
+
+    <h2 class="text-4xl font-bold text-center mt-6 mb-10">All Users</h2>
+
+    <!-- Filter buttons -->
+    <div class="flex justify-center mb-6 gap-4">
+        <button onclick="filterUsers('All')" id="filterAll" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">All Users</button>
+        <button onclick="filterUsers('Admin')" id="filterAdmin" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Admins</button>
+        <button onclick="filterUsers('Volunteer')" id="filterVolunteer" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Volunteers</button>
+        <button onclick="filterUsers('User')" id="filterUser" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Users</button>
+    </div>
+
+    <!-- Header row -->
+    <div class="grid grid-cols-6 gap-4 font-bold border-b pb-2 mb-2 px-10 bg-neutral-200/50 p-2">
+        <div class="col-span-1 text-center">ID</div>
+        <div class="col-span-1 text-center">Name</div>
+        <div class="col-span-2 text-center">Email</div>
+        <div class="col-span-1 text-center">Username</div>
+        <div class="col-span-1 text-center">Role</div>
+    </div>
+
+    <!-- Data rows -->
+    <div id="usersGrid" class="px-10 space-y-1 min-h-[100px]">
+        <div class="text-center text-gray-500">Loading users...</div>
+    </div>
+
+    <script>
+        let allUsersData = [];
+        let currentFilter = 'All';
+
+        // Decode JWT payload
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch {
+                return null;
+            }
+        }
+
+        async function loadAllUsers() {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    // No token: redirect to login page
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+                const payload = parseJwt(token);
+                console.log("Decoded JWT payload:", payload);
+
+                // Debug alert - remove/comment out after confirming the role key
+                // alert('Your JWT payload:\n' + JSON.stringify(payload, null, 2));
+
+                // Role checks - adjust as per your JWT payload format
+                const userRole =
+                    payload?.role ||
+                    (Array.isArray(payload?.roles) ? payload.roles[0] : null) ||  // If roles is array, pick first for simplicity
+                    payload?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
+                    null;
+
+                if (userRole !== "Admin") {
+                    alert("Access denied. Admin privileges required.");
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+                // Fetch users from API
+                const response = await fetch("https://localhost:7217/api/user/AllUsers", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        alert("Access denied. Admin privileges required.");
+                        window.location.href = "/login.html";
+                        return;
+                    }
+                    throw new Error("Failed to fetch users");
+                }
+
+                allUsersData = await response.json();
+
+                if (!Array.isArray(allUsersData) || allUsersData.length === 0) {
+                    document.getElementById("usersGrid").innerHTML = `<div class="text-center text-gray-500">No users found.</div>`;
+                } else {
+                    displayUsers();
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("Error loading users.");
+                document.getElementById("usersGrid").innerHTML = `<div class="text-center text-red-600">Error loading users.</div>`;
+            }
+        }
+
+        function filterUsers(role) {
+            currentFilter = role;
+
+            // Update button styles
+            document.querySelectorAll('button[id^="filter"]').forEach(btn => {
+                btn.className = "px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400";
+            });
+
+            const filterBtnId = "filter" + role;
+            const activeBtn = document.getElementById(filterBtnId);
+            if (activeBtn) {
+                activeBtn.className = "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600";
+            }
+
+            displayUsers();
+        }
+
+        function displayUsers() {
+            const container = document.getElementById("usersGrid");
+            container.innerHTML = "";
+
+            const roleColors = {
+                Admin: "bg-red-100 text-red-800 border-red-300",
+                Volunteer: "bg-green-100 text-green-800 border-green-300",
+                User: "bg-blue-100 text-blue-800 border-blue-300"
+            };
+
+            let filteredUsers = allUsersData;
+            if (currentFilter !== 'All') {
+                filteredUsers = allUsersData.filter(user => user.role === currentFilter);
+            }
+
+            if (filteredUsers.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500">No ${currentFilter} users found.</div>`;
+                updateCount(0);
+                return;
+            }
+
+            filteredUsers.forEach(user => {
+                const row = document.createElement("div");
+                row.className = "grid grid-cols-6 gap-4 border-b border-gray-300 h-[8vh] items-center py-1";
+
+                const roleClass = roleColors[user.role] || "bg-gray-100 text-gray-800 border-gray-300";
+
+                row.innerHTML = `
+                    <div class="col-span-1 text-center text-xs font-mono">${user.id ? user.id.substring(0, 8) + '...' : 'N/A'}</div>
+                    <div class="col-span-1 text-center text-sm font-semibold">${user.name || 'N/A'}</div>
+                    <div class="col-span-2 text-center text-sm break-words">${user.email || 'N/A'}</div>
+                    <div class="col-span-1 text-center text-sm">${user.userName || 'N/A'}</div>
+                    <div class="col-span-1 text-center">
+                        <span class="px-2 py-1 text-xs border rounded ${roleClass}">${user.role || 'Unknown'}</span>
+                    </div>
+                `;
+
+                container.appendChild(row);
+            });
+
+            updateCount(filteredUsers.length);
+        }
+
+        function updateCount(count) {
+            const countText = currentFilter === 'All'
+                ? `${count} Total User${count !== 1 ? 's' : ''}`
+                : `${count} ${currentFilter}${count !== 1 ? 's' : ''}`;
+
+            let countDiv = document.getElementById('userCount');
+            if (!countDiv) {
+                countDiv = document.createElement('div');
+                countDiv.id = 'userCount';
+                countDiv.className = 'text-center mt-4 text-gray-600 font-semibold';
+                document.body.appendChild(countDiv);
+            }
+            countDiv.textContent = countText;
+        }
+
+        // Load users on page load
+        document.addEventListener("DOMContentLoaded", loadAllUsers);
+    </script>
+
+</body>
+</html>
