@@ -438,7 +438,10 @@
                     // Show success message
                     const product = allProducts.find(p => p.id === productId);
                     showNotification(`${product.name} added to cart!`, 'success');
-                } else {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000)
+                        } else {
                     showNotification('Failed to add product to cart.', 'error');
                 }
             } catch (error) {

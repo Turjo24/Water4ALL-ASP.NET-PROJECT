@@ -65,6 +65,7 @@
             if (cartBadge) cartBadge.textContent = cartCount;
 
             localStorage.setItem('cartCount', cartCount);
+            
         }
 
         // Fetch cart from server
@@ -94,6 +95,7 @@
                 if (res.ok) {
                     fetchCartCount();
                     localStorage.setItem('cartUpdated', Date.now());
+                    location.reload();
                 } else {
                     const err = await res.json().catch(() => ({ message: 'Failed to add item' }));
                     alert(err.message || 'Failed to add item');

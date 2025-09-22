@@ -552,28 +552,34 @@
                     })
                 });
 
-                if (response.ok) {
-                    // Show success message with animation
-                    const addToCartBtn = document.getElementById('addToCartBtn');
-                    const originalText = addToCartBtn.innerHTML;
-                    addToCartBtn.innerHTML = '<i class="fas fa-check mr-3"></i>Added to Cart!';
-                    addToCartBtn.classList.remove('from-green-600', 'to-green-700', 'hover:from-green-700', 'hover:to-green-800');
-                    addToCartBtn.classList.add('bg-green-600');
+                 if (response.ok) {
+            // Show success message with animation
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const originalText = addToCartBtn.innerHTML;
+            addToCartBtn.innerHTML = '<i class="fas fa-check mr-3"></i>Added to Cart!';
+            addToCartBtn.classList.remove('from-green-600', 'to-green-700', 'hover:from-green-700', 'hover:to-green-800');
+            addToCartBtn.classList.add('bg-green-600');
 
-                    setTimeout(() => {
-                        addToCartBtn.innerHTML = originalText;
-                        addToCartBtn.classList.add('from-green-600', 'to-green-700', 'hover:from-green-700', 'hover:to-green-800');
-                        addToCartBtn.classList.remove('bg-green-600');
-                    }, 2000);
+            // Reset button text and classes after 2 seconds
+            setTimeout(() => {
+                addToCartBtn.innerHTML = originalText;
+                addToCartBtn.classList.add('from-green-600', 'to-green-700', 'hover:from-green-700', 'hover:to-green-800');
+                addToCartBtn.classList.remove('bg-green-600');
+            }, 2000);
 
-                } else {
-                    alert('Failed to add product to cart.');
-                }
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-                alert('An error occurred while adding to cart.');
-            }
+            // Reload the page once after 2.2 seconds
+            setTimeout(() => {
+                window.location.reload();
+            }, 2200);
+
+        } else {
+            alert('Failed to add product to cart.');
         }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert('An error occurred while adding to cart.');
+    }
+}
 
         // Edit product functionality (for admins only)
         function editProduct() {
